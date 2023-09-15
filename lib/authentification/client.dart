@@ -34,7 +34,7 @@ class _LeClientState extends State<LeClient> {
     // Effectuer la requête HTTP vers l'API Node.js pour enregistrer l'utilisateur
     try {
       var response = await http.post(
-        Uri.parse('http://192.168.1.13:3000/users/sinscrire'),
+        Uri.parse('http://192.168.0.61:3000/users/sinscrire'),
         body: {
           'nomprenom': nomprenom,
           'email': email,

@@ -297,7 +297,7 @@ class _CompteClientState extends State<CompteClient> {
 
   // Future<void> deconnecterUtilisateur() async {
   //   try {
-  //     final response = await http.get(Uri.parse('http://192.168.1.13:3000/users/logout'));
+  //     final response = await http.get(Uri.parse('http://192.168.0.61:3000/users/logout'));
 
   //     if (response.statusCode == 200) {
   //       // La déconnexion a réussi

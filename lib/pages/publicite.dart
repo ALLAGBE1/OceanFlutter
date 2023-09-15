@@ -29,7 +29,7 @@ class _PubliciteState extends State<Publicite> {
   Future<void> enregistrerUtilisateur() async {
 
     // Créez une requête multipart
-    var uri = Uri.parse('http://192.168.1.13:3000/publier');
+    var uri = Uri.parse('http://192.168.0.61:3000/publier');
     var request = http.MultipartRequest('POST', uri);
 
     // Vérifiez si un fichier a été choisi

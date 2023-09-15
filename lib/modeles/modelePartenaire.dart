@@ -41,7 +41,7 @@ class _ModelePartenaireState extends State<ModelePartenaire> {
 
   // Fonction pour mettre à jour l'état du partenaire
   Future<void> updatePrestataireState(bool newState) async {
-    final String apiUrl = 'http://192.168.1.32:3000/users/partenaires/${widget.id}';
+    final String apiUrl = 'http://192.168.0.61:3000/users/partenaires/${widget.id}';
     print("Donne moi l'url : " + apiUrl);
     try {
       final response = await http.put(

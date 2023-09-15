@@ -34,7 +34,7 @@ class _ConnexionState extends State<Connexion> {
 
     try {
       var response = await http.post(
-        Uri.parse('http://192.168.1.13:3000/users/connexion/'),
+        Uri.parse('http://192.168.0.61:3000/users/connexion/'),
         body: {
           'password': password,
           'username': username,
