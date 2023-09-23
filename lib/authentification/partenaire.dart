@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ocean/authentification/confirmation.dart';
 import 'package:ocean/authentification/connexion.dart';
 import 'package:ocean/pages/qrcodeView.dart';
 import 'package:file_picker/file_picker.dart';
@@ -138,8 +139,11 @@ class _PartenaireState extends State<Partenaire> {
                     // });
                     Navigator.push(
                     context,
+                    // MaterialPageRoute(
+                    //     builder: (context) => const Connexion())
                     MaterialPageRoute(
-                        builder: (context) => const Connexion()));
+                        builder: (context) => const ConfirmationScreen())
+                  );
                   },
                 ),
               ],

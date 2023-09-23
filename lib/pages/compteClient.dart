@@ -9,6 +9,7 @@ import 'package:ocean/authentification/user_data.dart';
 import 'package:google_fonts/google_fonts.dart';
 // import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class CompteClient extends StatefulWidget {
   final String documentFourni;
@@ -23,6 +24,51 @@ class CompteClient extends StatefulWidget {
 class _CompteClientState extends State<CompteClient> {
   File? _image;
   final ImagePicker _picker = ImagePicker();
+
+  // ::::::::::::::
+  bool isDisponible = false; // Utiliser une variable d'état locale
+
+  final MaterialStateProperty<Icon?> thumbIcon =
+      MaterialStateProperty.resolveWith<Icon?>(
+    (Set<MaterialState> states) {
+      if (states.contains(MaterialState.selected)) {
+        return const Icon(Icons.check);
+      }
+      return const Icon(Icons.close);
+    },
+  );
+
+  
+
+  // Fonction pour mettre à jour l'état du partenaire
+  // Future<void> updatePrestataireState(bool newState) async {
+  //   final String apiUrl = 'http://192.168.0.61:3000/users/partenaires/${widget.id}';
+  //   print("Donne moi l'url : " + apiUrl);
+  //   try {
+  //     final response = await http.put(
+  //       Uri.parse('${apiUrl}'),
+  //       body: {'prestataire': newState.toString()},
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       setState(() {
+  //         isDisponible = newState;
+  //       });
+  //       print('État du partenaire mis à jour avec succès');
+  //     } else {
+  //       print('Erreur lors de la mise à jour de l\'état du partenaire');
+  //     }
+  //   } catch (error) {
+  //     print('Erreur lors de la requête HTTP : $error');
+  //   }
+  // }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   isDisponible = widget.prestataire; // Initialiser la variable d'état locale
+  // }
+  // ::::::::::::::::::::::
   
 
   Future<void> _pickImage() async {
@@ -84,32 +130,30 @@ class _CompteClientState extends State<CompteClient> {
           ),
           _profile(),
           Expanded(
-  child: Container(
-    height: MediaQuery.sizeOf(context).height / 1,
-    width: MediaQuery.sizeOf(context).width,
-    decoration: const BoxDecoration(
-      color: Colors.white,
-    ),
-    child: Column(
-      children: [
-        _cardInfo(),
-        // if (widget.documentFourni.isNotEmpty) _entreprise() else _personnel(),
-        if (UserData.documentfournirId.isNotEmpty) _entreprise() else _personnel(),
-        const Divider(height: 25,),
-        _motdepasse(),
-        const Divider(height: 25,),
-        _langue(),
-        const Divider(height: 25,),
-        // if (widget.documentFourni.isNotEmpty) _disponibilite() else _inviter(),
-        if (UserData.documentfournirId.isNotEmpty) _disponibilite() else _inviter(),
-        const Divider(height: 30,),
-        _sedeconnecter(),
-      ],
-    ),
-  ),
-),
-
-          
+            child: Container(
+              height: MediaQuery.sizeOf(context).height / 1,
+              width: MediaQuery.sizeOf(context).width,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+              ),
+              child: Column(
+                children: [
+                  _cardInfo(),
+                  // if (widget.documentFourni.isNotEmpty) _entreprise() else _personnel(),
+                  if (UserData.documentfournirId.isNotEmpty) _entreprise() else _personnel(),
+                  const Divider(height: 25,),
+                  _motdepasse(),
+                  const Divider(height: 25,),
+                  _langue(),
+                  const Divider(height: 25,),
+                  // if (widget.documentFourni.isNotEmpty) _disponibilite() else _inviter(),
+                  if (UserData.documentfournirId.isNotEmpty) _disponibilite() else _inviter(),
+                  const Divider(height: 30,),
+                  _sedeconnecter(),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -255,11 +299,24 @@ class _CompteClientState extends State<CompteClient> {
 
   Widget _disponibilite() {
     return Container(
-      padding: const EdgeInsets.all(15),
-      child: const Row(
+      padding: const EdgeInsets.all(4),
+      child: Row(
         children: [
-          Expanded(child: Text("Disponibilité", style: TextStyle(fontSize: 16,),)),
-          Icon(Icons.arrow_forward_ios_rounded,),
+          const Expanded(child: Text("Disponibilité ?", style: TextStyle(fontSize: 16,),)),
+          // Icon(Icons.arrow_forward_ios_rounded,),
+          Switch(
+            activeColor: Colors.green,
+            thumbIcon: thumbIcon,
+            // value: isDisponible,
+            value: UserData.isAdmin,
+            onChanged: (bool value) {
+              setState(() {
+                // isDisponible = value;
+                // updatePrestataireState(value);
+                UserData.isAdmin;
+              });
+            },
+          ),
         ],
       ),
     );

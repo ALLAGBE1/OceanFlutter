@@ -1,12 +1,10 @@
-// ignore_for_file: avoid_print, use_build_context_synchronously
+// ignore_for_file: avoid_print, use_build_context_synchronously, depend_on_referenced_packages
 
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart'; 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:ocean/authentification/connexion.dart';
-// import 'package:ocean/authentification/enregistrement.dart';
 import 'package:ocean/pages/qrcodeView.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
@@ -169,7 +167,7 @@ class _PubliciteState extends State<Publicite> {
       body: SingleChildScrollView(
         child: Container(
           width: MediaQuery.sizeOf(context).width,
-          // height: MediaQuery.sizeOf(context).height,
+          height: MediaQuery.sizeOf(context).height,
           decoration: BoxDecoration(
               color: Colors.grey,
               border: Border.all(color: Colors.grey, width: 1.5),
@@ -227,22 +225,22 @@ class _PubliciteState extends State<Publicite> {
                     child: TextButton(onPressed: (){
                       enregistrerUtilisateur();
                     }, child: Text(
-                      'Continuer',
+                      'Publier',
                       style: GoogleFonts.acme(
                         fontSize: 20.0,
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                   )))),  
                   SizedBox(height: MediaQuery.sizeOf(context).height*0.030,),
-                  TextButton(onPressed: (){},
-                    child: Text(
-                      "Conditions générales d'utilisation",
-                      style: GoogleFonts.acme(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),)
+                  // TextButton(onPressed: (){},
+                  //   child: Text(
+                  //     "Conditions générales d'utilisation",
+                  //     style: GoogleFonts.acme(
+                  //       color: Colors.white,
+                  //       fontSize: 14,
+                  //       fontWeight: FontWeight.bold,
+                  //     ),
+                  //   ),)
                     
                 ],
               )   
@@ -256,15 +254,15 @@ class _PubliciteState extends State<Publicite> {
 
   Widget _documentFournir() {
     return Container(
-      alignment: Alignment.bottomLeft,
+      alignment: Alignment.center,
       padding: const EdgeInsets.only(left: 10.0),
       child: Text(
-        "Documents à fournir",
+        "Post",
         // textAlign: TextAlign.start,
         // textDirection: TextDirection.ltr,
         style: GoogleFonts.acme(
           color: Colors.white,
-          fontSize: 18,
+          fontSize: 25,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -301,29 +299,13 @@ class _PubliciteState extends State<Publicite> {
                 print("Chemin d'accès complet : ${file.path}");
               }
             },
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    selectedFileName ?? "Exemple : Carte commercant",
-                    style: const TextStyle(color: Colors.grey),
-                  ),
-                ),
-                CupertinoButton(
-                  
-                  padding: EdgeInsets.zero,
-                  child: const Icon(
-                    Icons.qr_code_scanner, // Icône de scanner
-                    color: Colors.grey,
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const QRViewExample()),
-                    );
-                  },
-                ),
-              ],
+            child: Container(
+              // height: 100,
+              margin: const EdgeInsets.all(15),
+              child: Text(
+                selectedFileName ?? "           Choisir le post                ",
+                style: const TextStyle(color: Colors.grey),
+              ),
             ),
           ),
         ),

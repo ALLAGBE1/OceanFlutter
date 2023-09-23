@@ -32,7 +32,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     ];
 
     if (UserData.isAdmin) {
-      destinations.add(const NavigationDestination(icon: Icon(Icons.admin_panel_settings, color: Colors.white,), label: " ")); // ou n'importe quelle icône représentant l'administration
+      destinations.add(const NavigationDestination(icon: Icon(Icons.admin_panel_settings, color: Colors.white,), label: " ")); 
     }
 
     return destinations;

@@ -64,11 +64,13 @@ class _ConnexionState extends State<Connexion> {
         String nomprenom = cordonnees["nomprenom"];
         String email = cordonnees["email"];
         bool isAdmin = cordonnees["admin"];
+        bool isDisponible = cordonnees["disponible"];
         String documentfournirId = cordonnees["documentfournirId"];
 
         UserData.nomprenom = nomprenom;
         UserData.email = email;
         UserData.isAdmin = isAdmin;
+        UserData.isDisponible = isDisponible;
         UserData.documentfournirId = documentfournirId;
         
 
@@ -78,6 +80,7 @@ class _ConnexionState extends State<Connexion> {
           prefs.setString('nomprenom', UserData.nomprenom);
           prefs.setString('email', UserData.email);
           prefs.setBool('isAdmin', UserData.isAdmin);
+          prefs.setBool('isDisponible', UserData.isDisponible);
           prefs.setString('documentfournirId', UserData.documentfournirId);
           showDialog(
             context: context,
