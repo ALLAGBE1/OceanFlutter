@@ -6,6 +6,7 @@ import 'package:ocean/authentification/connexion.dart';
 // import 'package:ocean/authentification/connexion.dart';
 import 'package:ocean/authentification/partenaire.dart';
 import 'package:ocean/authentification/user_data.dart';
+import 'package:permission_handler/permission_handler.dart';
 // import 'package:ocean/pages/preInscription.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,9 +19,17 @@ class PreConnexion extends StatefulWidget {
 
 class _PreConnexionState extends State<PreConnexion> {
 
+  Future<void> _checkPermission() async {
+    if (await Permission.location.request().isGranted) {
+      // _getLocation();
+    }
+  }
+
+
   @override
   void initState() {
     super.initState();
+    _checkPermission();
     _verifierConnexion();
   }
 
@@ -28,17 +37,54 @@ class _PreConnexionState extends State<PreConnexion> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     // Vérifiez si l'utilisateur est déjà connecté
+    String? id = prefs.getString('id');
+    print("111111111111111111111111111111111111111111 ${id}");
+    String? username= prefs.getString('username');
+    print("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz ${username}");
+    String? photoProfil= prefs.getString('photoProfil');
+    print("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr ${photoProfil}");
     String? nomprenom = prefs.getString('nomprenom');
+    print("222222222222222222222222222222222222222222 ${nomprenom}");
     String? email = prefs.getString('email');
+    print("333333333333333333333333333333333333333333 ${email}");
     String? documentfournirId = prefs.getString('documentfournirId');
+    print("4444444444444444444444444444444444444444444 ${documentfournirId}");
+    String? domaineactivite = prefs.getString('domaineactivite');
+    print("55555555555555555555555555555555555555555555 ${domaineactivite}");
+    String? nomcommercial = prefs.getString('nomcommercial');
+    print("66666666666666666666666666666666666666666666 ${nomcommercial}");
+    String? latitude = prefs.getString('latitude');
+    print("77777777777777777777777777777777777777777777 ${latitude}");
+    String? longitude = prefs.getString('longitude');
+    print("88888888888888888888888888888888888888888888 ${longitude}");
+    String? nomDuLieu = prefs.getString('nomDuLieu');
+    print("99999999999999999999999999999999999999999999999 ${nomDuLieu}");
+    bool? disponible = prefs.getBool('disponible');
+    print("1111111112222222222222222222222222222222222222 ${disponible}");
+    bool? confirmation = prefs.getBool('confirmation');
+    print("1111111112222222222222222222222222222222222222 ${confirmation}");
 
-    if (nomprenom != null && email != null && documentfournirId != null) {
+    // if (id != null && nomprenom != null && email != null && documentfournirId != null && disponible != null  && domaineactivite != null 
+    //   && nomcommercial != null && latitude != null && longitude != null && nomDuLieu != null) {
+      if (id != null && username != null && photoProfil != null && nomprenom != null && email != null && documentfournirId != null && disponible != null && confirmation != null
+        && domaineactivite != null && nomcommercial != null && latitude != null && longitude != null) {
       // Mettez à jour les données de l'utilisateur en mémoire
-      UserData.nomprenom = nomprenom;
-      UserData.email = email;
-      UserData.documentfournirId = documentfournirId;
-      // Redirigez vers la page d'accueil
-      Navigator.pushReplacementNamed(context, '/home');  
+        UserData.id = id;
+        UserData.username = username;
+        UserData.photoProfil = photoProfil;
+        UserData.nomprenom = nomprenom;
+        UserData.email = email;
+        UserData.documentfournirId = documentfournirId;
+        UserData.domaineactivite = domaineactivite;
+        UserData.nomcommercial = nomcommercial;
+        UserData.latitude = latitude;
+        UserData.longitude = longitude;
+        UserData.nomDuLieu = nomDuLieu?? UserData.nomDuLieu; //Je dois revoir si possible cette ligne
+        UserData.disponible = disponible;
+        UserData.confirmation = confirmation;
+        // Redirigez vers la page d'accueil
+        Navigator.pushReplacementNamed(context, '/home');  
+        // Navigator.pushReplacementNamed(context, '/confirmation');  
     }
   }
   

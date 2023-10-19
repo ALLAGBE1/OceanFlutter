@@ -1,8 +1,9 @@
-// ignore_for_file: dead_code, unnecessary_cast
+// ignore_for_file: dead_code, unnecessary_cast, avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:ocean/authentification/client.dart';
+import 'package:ocean/authentification/confirmation.dart';
 import 'package:ocean/authentification/connexion.dart';
 import 'package:ocean/authentification/enregistrement.dart';
 import 'package:ocean/pages/bottomNavBar.dart';
@@ -48,6 +49,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const SplashScreen(),
         '/home': (context) => BottomNavBar(documentFourni: documentFourni,),
+        '/confirmation': (context) => const ConfirmationScreen(),
         '/connexion': (context) => const Connexion(),
         '/enregistrement': (context) => const Enregistrement(),
         '/preinscription': (context) => const PreInscription(),

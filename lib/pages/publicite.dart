@@ -27,7 +27,7 @@ class _PubliciteState extends State<Publicite> {
   Future<void> enregistrerUtilisateur() async {
 
     // Créez une requête multipart
-    var uri = Uri.parse('http://192.168.0.61:3000/publier');
+    var uri = Uri.parse('http://192.168.31.206:3000/publier');
     var request = http.MultipartRequest('POST', uri);
 
     // Vérifiez si un fichier a été choisi
@@ -60,104 +60,6 @@ class _PubliciteState extends State<Publicite> {
       // Votre traitement en cas d'erreur
     }
   }
-
-  //   try {
-  //     var response = await request.send();
-
-  //     // Vérifier la réponse du serveur
-  //     if (response.statusCode == 200) {
-  //       // Vous pouvez également convertir la réponse en texte pour obtenir des détails
-  //       String responseBody = await response.stream.bytesToString();
-        
-  //       print('Réponse du serveur: $responseBody');
-  //       // Enregistrement réussi
-  //       showDialog(
-  //         context: context,
-  //         builder: (BuildContext context) {
-  //           return AlertDialog(
-  //             title: const Text('Succès'),
-  //             content: const Text('L\'utilisateur a été enregistré avec succès.'),
-  //             actions: [
-  //               TextButton(
-  //                 child: const Text('OK'),
-  //                 onPressed: () {
-  //                   // Navigator.of(context).pop();
-  //                   // setState(() {
-  //                   //   nomController.text = "";
-  //                   //   prenomController.text = "";
-  //                   //   emailController.text = "";
-  //                   //   passwordController.text = "";
-  //                   //   usernameController.text = "";
-  //                   //   confirmationController.text = "";
-  //                   // });
-  //                   Navigator.push(
-  //                   context,
-  //                   MaterialPageRoute(
-  //                       builder: (context) => const Connexion()));
-  //                 },
-  //               ),
-  //             ],
-  //           );
-  //         },
-  //       );
-  //     } else {
-  //       // Erreur lors de l'enregistrement
-  //       showDialog(
-  //         context: context,
-  //         builder: (BuildContext context) {
-  //           return AlertDialog(
-  //             title: const Text('Erreur'),
-  //             content: const Text('Une erreur est survenue lors de l\'enregistrement de l\'utilisateur.'),
-  //             actions: [
-  //               TextButton(
-  //                 child: const Text('OK'),
-  //                 onPressed: () {
-  //                   // setState(() {
-  //                   //   nomController.text = "";
-  //                   //   prenomController.text = "";
-  //                   //   emailController.text = "";
-  //                   //   passwordController.text = "";
-  //                   //   usernameController.text = "";
-  //                   //   confirmationController.text = "";
-  //                   // });
-  //                   Navigator.of(context).pop();
-  //                 },
-  //               ),
-  //             ],
-  //           );
-  //         },
-  //       );
-  //     }
-  //   } catch (error) {
-  //     print('Erreur : $error');
-  //     showDialog(
-  //       context: context,
-  //       builder: (BuildContext context) {
-  //         return AlertDialog(
-  //           title: const Text('Erreur'),
-  //           content: const Text('Une erreur est survenue lors de la connexion au serveur.'),
-  //           actions: [
-  //             TextButton(
-  //               child: const Text('OK'),
-  //               onPressed: () {
-  //                 // setState(() {
-  //                 //   nomController.text = "";
-  //                 //   prenomController.text = "";
-  //                 //   emailController.text = "";
-  //                 //   passwordController.text = "";
-  //                 //   usernameController.text = "";
-  //                 //   confirmationController.text = "";
-  //                 // });
-  //                 Navigator.of(context).pop();
-  //               },
-  //             ),
-  //           ],
-  //         );
-  //       },
-  //     );
-  //   }
-  // }
-
 
 
 

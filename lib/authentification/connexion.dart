@@ -1,10 +1,15 @@
-// ignore_for_file: use_build_context_synchronously, avoid_print, prefer_interpolation_to_compose_strings
+// ignore_for_file: use_build_context_synchronously, avoid_print, prefer_interpolation_to_compose_strings, prefer_const_declarations
+// AIzaSyAsNXk9Lonwzza_cKPSRKlcQmpNZIXNh_U
+// AIzaSyCr1RuzlktW07p-DPaQylXgtuVdWGmFd1A
+// Pour moi
+// AIzaSyAGztnpiNaYe1Jsa7HMsmaq2kRMdRRTEdY
 
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:ocean/authentification/confirmation.dart';
 import 'package:ocean/authentification/enregistrement.dart';
 import 'package:ocean/authentification/user_data.dart';
 import 'package:ocean/pages/bottomNavBar.dart';
@@ -28,13 +33,43 @@ class _ConnexionState extends State<Connexion> {
   TextEditingController usernameController = TextEditingController();
   String documentFourni = ""; // Déclarer la variable en dehors du bloc if
 
+  Future<String> obtenirNomDuLieu(double latitude, double longitude) async {
+    final apiKey = 'AIzaSyAGztnpiNaYe1Jsa7HMsmaq2kRMdRRTEdY'; // Remplacez ceci par votre clé d'API Google Maps Geocoding
+    final url =
+        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=$apiKey';
+
+    try {
+      var response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        if (data['status'] == 'OK') {
+          // Obtenez le nom du lieu à partir des résultats de géocodage
+          var results = data['results'];
+          if (results.isNotEmpty) {
+            return results[0]['formatted_address'];
+          } else {
+            return 'Lieu inconnu';
+          }
+        } else {
+          return 'Erreur de géocodage';
+        }
+      } else {
+        throw Exception('Échec de la requête de géocodage');
+      }
+    } catch (error) {
+      print('Erreur de géocodage : $error');
+      return 'Erreur de géocodage';
+    }
+  }
+
   Future<void> connecterUtilisateur() async {
     String password = passwordController.text;
     String username = usernameController.text;
 
     try {
       var response = await http.post(
-        Uri.parse('http://192.168.0.61:3000/users/connexion/'),
+        Uri.parse('http://192.168.31.206:3000/users/connexion/'),
         body: {
           'password': password,
           'username': username,
@@ -51,37 +86,78 @@ class _ConnexionState extends State<Connexion> {
         if(data.containsKey('user')) {
           print("Nom et prénom : " + data['user']['nomprenom']);
         }
-        if(data.containsKey('user')) {
-          print("Document Fourni : " + data['user']['documentfournirId']);
-          documentFourni = data['user']['documentfournirId'];
-          print("valeur ::::: " + documentFourni);
-        }
-        // if(data.containsKey('user')) {
-        //   bool isAdmin = data['user']['admin'];
-        //   print("Admin : " + isAdmin.toString());
-        // }
-        var cordonnees = data['user'];
-        String nomprenom = cordonnees["nomprenom"];
-        String email = cordonnees["email"];
-        bool isAdmin = cordonnees["admin"];
-        bool isDisponible = cordonnees["disponible"];
-        String documentfournirId = cordonnees["documentfournirId"];
+        if(data.containsKey('user')) { 
+          // print("Document Fourni : " + data['user']['documentfournirId']);
+          // documentFourni = data['user']['documentfournirId'];
+          // print("valeur ::::: " + documentFourni);
 
-        UserData.nomprenom = nomprenom;
-        UserData.email = email;
-        UserData.isAdmin = isAdmin;
-        UserData.isDisponible = isDisponible;
-        UserData.documentfournirId = documentfournirId;
-        
+          var cordonnees = data['user'];
+          String id = cordonnees["_id"];
+          print("Ouaissssssssssssssssssssss ${id}");
+          String nomprenom = cordonnees["nomprenom"];
+          String email = cordonnees["email"];
+          String photoProfil = cordonnees["photoProfil"];
+          bool confirmation = cordonnees["confirmation"];
+          String nomcommercial = cordonnees["nomcommercial"];
+          String domaineactivite = cordonnees["domaineactivite"];
+          bool isAdmin = cordonnees["admin"];
+          bool disponible = cordonnees["disponible"];
+          String documentfournirId = cordonnees["documentfournirId"];
+          print("Document FourniId ${documentfournirId}");
+          
+          UserData.username = username;
+          UserData.nomprenom = nomprenom;
+          UserData.email = email;
+          UserData.photoProfil = photoProfil;
+          UserData.confirmation = confirmation;
+          UserData.nomcommercial = nomcommercial;
+          UserData.domaineactivite = domaineactivite;
+          UserData.isAdmin = isAdmin;
+          UserData.disponible = disponible;
+          UserData.documentfournirId = documentfournirId;
+          UserData.id = id;
+
+          String latitude = '';
+          String longitude = '';
+
+          if (data['user']['location'] != null) {
+            latitude = data['user']['location']['coordinates'][1].toString();
+            longitude = data['user']['location']['coordinates'][0].toString();
+          }
+          UserData.latitude = latitude;
+          UserData.longitude = longitude;
+
+          String nomDuLieu = await obtenirNomDuLieu(double.parse(latitude), double.parse(longitude));
+          if (nomDuLieu != 'Erreur de géocodage') {
+            UserData.nomDuLieu = nomDuLieu;
+          } else {
+            // Gestion de l'erreur de géocodage
+            UserData.nomDuLieu = 'Lieu inconnu';
+          }
+        }
+                
 
         if (data['success']) {
           // Stockez les informations dans SharedPreferences
           SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('username', UserData.username);
           prefs.setString('nomprenom', UserData.nomprenom);
           prefs.setString('email', UserData.email);
+          prefs.setString('photoProfil', UserData.photoProfil);
+          prefs.setBool('confirmation', UserData.confirmation);
+          prefs.setString('nomcommercial', UserData.nomcommercial);
+          prefs.setString('domaineactivite', UserData.domaineactivite);
           prefs.setBool('isAdmin', UserData.isAdmin);
-          prefs.setBool('isDisponible', UserData.isDisponible);
+          prefs.setBool('disponible', UserData.disponible);
           prefs.setString('documentfournirId', UserData.documentfournirId);
+          prefs.setString('latitude', UserData.latitude);
+          prefs.setString('longitude', UserData.longitude);
+          // prefs.setString('id', UserData.id) as String;
+          bool success = await prefs.setString('id', UserData.id);
+          String rrr = success ? 'Id enregistré avec succès' : "Échec de l'enregistrement de l\'Id";
+          print("ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp ${rrr}");
+
+
           showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -92,17 +168,19 @@ class _ConnexionState extends State<Connexion> {
                   TextButton(
                     child: const Text('OK'),
                     onPressed: () {
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(builder: (context) => const BottomNavBar()),
-                      // );
-                      // Navigator.pushReplacementNamed(context, '/home');
-                      Navigator.pushAndRemoveUntil(
-                        context, 
-                        MaterialPageRoute(builder: (context) => BottomNavBar(documentFourni: documentFourni)), 
-                        (route) => false
-                      );
-
+                      if(UserData.confirmation) {
+                        Navigator.pushAndRemoveUntil(
+                          context, 
+                          MaterialPageRoute(builder: (context) => BottomNavBar(documentFourni: documentFourni)), 
+                          (route) => false
+                        );
+                      } else {
+                        Navigator.pushAndRemoveUntil(
+                          context, 
+                          MaterialPageRoute(builder: (context) => const ConfirmationScreen() ), 
+                          (route) => false
+                        );
+                      }
                     },
                   ),
                 ],

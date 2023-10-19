@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:ocean/authentification/confirmation.dart';
+// import 'package:ocean/authentification/confirmation.dart';
 import 'package:ocean/authentification/connexion.dart';
 import 'package:ocean/pages/qrcodeView.dart';
 import 'package:file_picker/file_picker.dart';
@@ -32,6 +32,7 @@ class _PartenaireState extends State<Partenaire> {
 
   TextEditingController nomprenomController = TextEditingController();
   TextEditingController emailController = TextEditingController();
+  TextEditingController numeroController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
   TextEditingController nomcommercialController = TextEditingController();
@@ -75,16 +76,18 @@ class _PartenaireState extends State<Partenaire> {
   Future<void> enregistrerUtilisateur() async {
     String nomprenom = nomprenomController.text;
     String email = emailController.text;
+    String numero = numeroController.text;
     String password = passwordController.text;
     String username = usernameController.text;
     String nomcommercial = nomcommercialController.text;
     String domaineactivite = domaineactiviteController.text;
 
     // Créez une requête multipart
-    var uri = Uri.parse('http://192.168.0.61:3000/users/sinscrire');
+    var uri = Uri.parse('http://192.168.31.206:3000/users/sinscrire');
     var request = http.MultipartRequest('POST', uri)
       ..fields['nomprenom'] = nomprenom
       ..fields['email'] = email
+      ..fields['numero'] = numero
       ..fields['username'] = username
       ..fields['password'] = password
       ..fields['nomcommercial'] = nomcommercial
@@ -139,10 +142,10 @@ class _PartenaireState extends State<Partenaire> {
                     // });
                     Navigator.push(
                     context,
-                    // MaterialPageRoute(
-                    //     builder: (context) => const Connexion())
                     MaterialPageRoute(
-                        builder: (context) => const ConfirmationScreen())
+                        builder: (context) => const Connexion())
+                    // MaterialPageRoute(
+                    //     builder: (context) => const ConfirmationScreen())
                   );
                   },
                 ),
@@ -195,7 +198,7 @@ class _PartenaireState extends State<Partenaire> {
 
 
   Future<List<String>> fetchDomainesActivite() async {
-    final response = await http.get(Uri.parse('http://192.168.0.61:3000/domaineActivite/'));
+    final response = await http.get(Uri.parse('http://192.168.31.206:3000/domaineActivite/'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as List<dynamic>;
@@ -259,7 +262,9 @@ class _PartenaireState extends State<Partenaire> {
                   _email(),
                   _vemail(),
                   SizedBox(height: MediaQuery.sizeOf(context).height*0.030,),
-                  // SizedBox(height: MediaQuery.sizeOf(context).height*0.030,),
+                  _numero(),
+                  _vnumero(),
+                  SizedBox(height: MediaQuery.sizeOf(context).height*0.030,),
                   _motdepasse(),
                   _vmotdepasse(),
                   SizedBox(height: MediaQuery.sizeOf(context).height*0.030,),
@@ -314,7 +319,7 @@ class _PartenaireState extends State<Partenaire> {
   }
 
   Widget _entetetext() {
-    return Container(
+    return SizedBox(
       child: Text(
         "Créer un compte",
         style: GoogleFonts.acme(
@@ -393,7 +398,7 @@ class _PartenaireState extends State<Partenaire> {
       alignment: Alignment.bottomLeft,
       padding: const EdgeInsets.only(left: 10.0),
       child: Text(
-        "Numéro de téléphone ou Email",
+        "Email",
         style: GoogleFonts.acme(
           color: Colors.white,
           fontSize: 18,
@@ -409,7 +414,38 @@ class _PartenaireState extends State<Partenaire> {
       margin: const EdgeInsets.all(10),
       child: CupertinoTextField(
         controller: emailController,
-        placeholder: "Numéro de téléphone ou Email",
+        placeholder: "Email",
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.greenAccent),
+          borderRadius: BorderRadius.circular(5),
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget _numero() {
+    return Container(
+      alignment: Alignment.bottomLeft,
+      padding: const EdgeInsets.only(left: 10.0),
+      child: Text(
+        "Numéro de téléphone",
+        style: GoogleFonts.acme(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _vnumero() {
+    return Container(
+      height: 58,
+      margin: const EdgeInsets.all(10),
+      child: CupertinoTextField(
+        controller: numeroController,
+        placeholder: "Numéro de téléphone",
         decoration: BoxDecoration(
           border: Border.all(color: Colors.greenAccent),
           borderRadius: BorderRadius.circular(5),
@@ -1007,7 +1043,7 @@ class _PartenaireState extends State<Partenaire> {
 //     String domaineactivite = domaineactiviteController.text;
 
 //     // Créez une requête multipart
-//     var uri = Uri.parse('http://192.168.0.61:3000/users/sinscrire');
+//     var uri = Uri.parse('http://192.168.31.206:3000/users/sinscrire');
 //     var request = http.MultipartRequest('POST', uri)
 //       ..fields['nomprenom'] = nomprenom
 //       ..fields['email'] = email
@@ -1134,7 +1170,7 @@ class _PartenaireState extends State<Partenaire> {
 
 
 //   Future<List<String>> fetchDomainesActivite() async {
-//     final response = await http.get(Uri.parse('http://192.168.0.61:3000/domaineActivite/'));
+//     final response = await http.get(Uri.parse('http://192.168.31.206:3000/domaineActivite/'));
 
 //     if (response.statusCode == 200) {
 //       final data = jsonDecode(response.body) as List<dynamic>;

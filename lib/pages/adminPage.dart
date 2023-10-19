@@ -47,7 +47,7 @@ class _AdminPageState extends State<AdminPage> {
       isLoading = true; // Afficher le chargement
     });
 
-    final response = await http.get(Uri.parse('http://192.168.0.61:3000/users/partenaires'));
+    final response = await http.get(Uri.parse('http://192.168.31.206:3000/users/partenaires'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as List<dynamic>;
@@ -133,7 +133,7 @@ class _AdminPageState extends State<AdminPage> {
     String correctedDownloadUrl = partenaire.downloadUrl.replaceAll("\\", "/");
     
     // Ici, nous ajoutons le préfixe à l'URL relative
-    String fullDownloadUrl = 'http://192.168.0.61:3000/users$correctedDownloadUrl';
+    String fullDownloadUrl = 'http://192.168.31.206:3000/users$correctedDownloadUrl';
 
     print("Téléchargement depuis l'URL: $fullDownloadUrl"); 
 
@@ -521,7 +521,7 @@ class FakeItem extends StatelessWidget {
 //       isLoading = true; // Afficher le chargement
 //     });
 
-//     final response = await http.get(Uri.parse('http://192.168.0.61:3000/users/partenaires'));
+//     final response = await http.get(Uri.parse('http://192.168.31.206:3000/users/partenaires'));
 
 //     if (response.statusCode == 200) {
 //       final data = jsonDecode(response.body) as List<dynamic>;
@@ -569,7 +569,7 @@ class FakeItem extends StatelessWidget {
 //     String correctedDownloadUrl = partenaire.downloadUrl.replaceAll("\\", "/");
     
 //     // Ici, nous ajoutons le préfixe à l'URL relative
-//     String fullDownloadUrl = 'http://192.168.0.61:3000/users$correctedDownloadUrl';
+//     String fullDownloadUrl = 'http://192.168.31.206:3000/users$correctedDownloadUrl';
 
 //     print("Téléchargement depuis l'URL: $fullDownloadUrl"); 
 
@@ -731,7 +731,7 @@ class FakeItem extends StatelessWidget {
 //       isLoading = true; // Afficher le chargement
 //     });
 
-//     final response = await http.get(Uri.parse('http://192.168.0.61:3000/users/partenaires'));
+//     final response = await http.get(Uri.parse('http://192.168.31.206:3000/users/partenaires'));
 
 //     if (response.statusCode == 200) {
 //       final data = jsonDecode(response.body) as List<dynamic>;
@@ -757,7 +757,7 @@ class FakeItem extends StatelessWidget {
 //   void _openDownload(int index) {
 //     final partenaire = partenaires[index];
 //     String correctedDownloadUrl = partenaire.downloadUrl.replaceAll("\\", "/");
-//     String fullDownloadUrl = 'http://192.168.0.61:3000/users$correctedDownloadUrl';
+//     String fullDownloadUrl = 'http://192.168.31.206:3000/users$correctedDownloadUrl';
 
 //     print("Téléchargement depuis l'URL: $fullDownloadUrl"); 
 
@@ -1611,7 +1611,7 @@ class ProgressIndicatorWidget extends StatelessWidget {
 //     // });
 
 //     // final response = await http.get(Uri.parse('http://192.168.0.24:3000/categories'));
-//     final response = await http.get(Uri.parse('http://192.168.0.61:3000/users'));
+//     final response = await http.get(Uri.parse('http://192.168.31.206:3000/users'));
 
 //     if (response.statusCode == 200) {
 //       final data = jsonDecode(response.body) as List<dynamic>;
