@@ -46,6 +46,7 @@ class _PartenaireState extends State<Partenaire> {
   void initState() {
     super.initState();
     _checkPermission();
+    fetchDomainesActivite(); 
   }
 
   Future<void> _checkPermission() async {
@@ -83,7 +84,8 @@ class _PartenaireState extends State<Partenaire> {
     String domaineactivite = domaineactiviteController.text;
 
     // Créez une requête multipart
-    var uri = Uri.parse('http://192.168.31.206:3000/users/sinscrire');
+    // var uri = Uri.parse('https://10.50.12.85:3000/users/sinscrire');
+    var uri = Uri.parse('https://ocean-52xt.onrender.com/users/sinscrire');
     var request = http.MultipartRequest('POST', uri)
       ..fields['nomprenom'] = nomprenom
       ..fields['email'] = email
@@ -186,7 +188,7 @@ class _PartenaireState extends State<Partenaire> {
               TextButton(
                 child: const Text('OK'),
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pop(); 
                 },
               ),
             ],
@@ -198,7 +200,8 @@ class _PartenaireState extends State<Partenaire> {
 
 
   Future<List<String>> fetchDomainesActivite() async {
-    final response = await http.get(Uri.parse('http://192.168.31.206:3000/domaineActivite/'));
+    // final response = await http.get(Uri.parse('http://10.50.12.85:3000/domaineActivite/'));
+    final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/domaineActivite/'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as List<dynamic>;
@@ -1043,7 +1046,7 @@ class _PartenaireState extends State<Partenaire> {
 //     String domaineactivite = domaineactiviteController.text;
 
 //     // Créez une requête multipart
-//     var uri = Uri.parse('http://192.168.31.206:3000/users/sinscrire');
+//     var uri = Uri.parse('https://ocean-52xt.onrender.com/users/sinscrire');
 //     var request = http.MultipartRequest('POST', uri)
 //       ..fields['nomprenom'] = nomprenom
 //       ..fields['email'] = email
@@ -1170,7 +1173,7 @@ class _PartenaireState extends State<Partenaire> {
 
 
 //   Future<List<String>> fetchDomainesActivite() async {
-//     final response = await http.get(Uri.parse('http://192.168.31.206:3000/domaineActivite/'));
+//     final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/domaineActivite/'));
 
 //     if (response.statusCode == 200) {
 //       final data = jsonDecode(response.body) as List<dynamic>;

@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
-        android:label="ocean"
+        android:label="Ocean"
         android:name="${applicationName}"
         android:icon="@mipmap/logo_ocean">
         <activity

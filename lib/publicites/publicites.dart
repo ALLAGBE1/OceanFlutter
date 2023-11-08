@@ -33,7 +33,7 @@ class _MesPublicitesState extends State<MesPublicites> {
   }
 
   Future<List<Publicites>> fetchPublicites() async {
-    final apiUrl = 'http://192.168.31.206:3000/publier';
+    final apiUrl = 'https://ocean-52xt.onrender.com/publier';
 
     try {
       final response = await http.get(Uri.parse(apiUrl));
@@ -61,7 +61,7 @@ class _MesPublicitesState extends State<MesPublicites> {
   }
 
   Future<void> deletePublicite(String publiciteId) async {
-    final apiUrl = 'http://192.168.31.206:3000/publier/publicite/$publiciteId';
+    final apiUrl = 'https://ocean-52xt.onrender.com/publier/publicite/$publiciteId';
 
     try {
       final response = await http.delete(Uri.parse(apiUrl));

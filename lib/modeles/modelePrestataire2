@@ -7,7 +7,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:url_launcher/url_launcher.dart';
 // import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -25,20 +24,6 @@ class Commentaire {
   Commentaire(this.id, this.comment, this.author);
   
   String get nomprenom => author['nomprenom']; // Accès à nomprenom à l'intérieur de l'objet author
-}
-
-class Rating {
-  final String id;
-  int rating;
-  final Map<String, dynamic> author;
-  final String prestataire;
-  // final int rating; // Nouvelle propriété pour stocker la notation du prestataire
-
-
-  Rating(this.id, this.author, this.prestataire, this.rating
-  //  this.rating
-  );
-  String get nomprenom => author['nomprenom'];
 }
 
 
@@ -80,14 +65,11 @@ class _ModelePrestataireState extends State<ModelePrestataire> {
 
   List<Commentaire> commentaires = [];
 
-  List<Rating> ratings = [];
-
   TextEditingController usernameController = TextEditingController();
 
   late double _rating;
   final double _initialRating = 0.0;
-  IconData? _selectedIcon;
-  int _ratingBarMode = 1;
+  // IconData? _selectedIcon;
   final bool _isVertical = false;
 
   int _selectedIndex = 0; // Ajoutez cette ligne pour déclarer la variable _selectedIndex
@@ -102,6 +84,30 @@ class _ModelePrestataireState extends State<ModelePrestataire> {
     },
   );
 
+  // TextEditingController nomprenomController = TextEditingController();
+  Future<void> _saveRatingToDatabase(double rating) async {
+    var apiUrl = 'http://192.168.43.166:3000/users/partenaires/${widget.id}'; // Remplacez cela par votre URL d'API
+    var requestBody = {'rating': rating.toString()}; // Les données que vous voulez envoyer à la base de données
+
+    try {
+      var response = await http.post(
+        apiUrl as Uri,
+        body: requestBody,
+      );
+
+      if (response.statusCode == 200) {
+        // La requête a réussi
+        print('Rating enregistré avec succès dans la base de données.');
+      } else {
+        // La requête a échoué avec une erreur
+        print('Échec de l\'enregistrement du rating dans la base de données. Statut: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Une erreur s'est produite lors de l'envoi de la requête
+      print('Erreur lors de l\'envoi de la requête: $error');
+    }
+  } //A décommenter
+
 
   // Le bonne méthode.
   Future<List<Commentaire>> fetchData1() async {
@@ -109,7 +115,7 @@ class _ModelePrestataireState extends State<ModelePrestataire> {
     var headers = {
       'Content-Type': 'application/json'
     };
-    var request = http.Request('POST', Uri.parse('https://ocean-52xt.onrender.com/comments'));
+    var request = http.Request('POST', Uri.parse('http://192.168.43.166:3000/comments'));
     request.body = json.encode({
       "comment": username,
       "author": UserData.id,
@@ -130,68 +136,14 @@ class _ModelePrestataireState extends State<ModelePrestataire> {
     }
   }
 
-  //Poster un rating
-  Future<List<Rating>> postRating() async {
-    double username = _rating;
-    var headers = {
-      'Content-Type': 'application/json'
-    };
-    var request = http.Request('POST', Uri.parse('http://192.168.43.166:3000/ratings'));
-    request.body = json.encode({
-      "rating": username,
-      "author": UserData.id,
-      "prestataire": widget.id
-    });
-    request.headers.addAll(headers);
-
-    http.StreamedResponse response = await request.send();
-
-    if (response.statusCode == 200) {
-      var jsonString = await response.stream.bytesToString();
-      print(jsonString);
-
-      return ratings;
-    } else {
-      // Gérez les erreurs ici, vous pouvez renvoyer une liste vide ou lancer une exception selon le cas
-      throw Exception('Erreur lors de la création du rating');
-    }
-  }
-
-  //Poster un rating
-  Future<List<Rating>> updateRating() async {
-    double username = _rating;
-    var headers = {
-      'Content-Type': 'application/json'
-    };
-    var request = http.Request('PUT', Uri.parse('http://192.168.43.166:3000/ratings'));
-    request.body = json.encode({
-      "rating": username,
-      // "author": UserData.id,
-      // "prestataire": widget.id
-    });
-    request.headers.addAll(headers);
-
-    http.StreamedResponse response = await request.send();
-
-    if (response.statusCode == 200) {
-      var jsonString = await response.stream.bytesToString();
-      print(jsonString);
-
-      return ratings;
-    } else {
-      // Gérez les erreurs ici, vous pouvez renvoyer une liste vide ou lancer une exception selon le cas
-      throw Exception('Erreur lors de la mise à jour du rating');
-    }
-  }
-
 
   Future<List<Commentaire>> fetchData() async {
     setState(() {
       isLoading = true; // Afficher le chargement
     });
 
-    // final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/comments'));
-    final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/comments/commentaires/${widget.id}'));
+    // final response = await http.get(Uri.parse('http://192.168.43.166:3000/comments'));
+    final response = await http.get(Uri.parse('http://192.168.43.166:3000/comments/commentaires/${widget.id}'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as List<dynamic>;
@@ -216,89 +168,74 @@ class _ModelePrestataireState extends State<ModelePrestataire> {
   } else {
     throw Exception('Failed to fetch data from MongoDB');
   }
-} 
+}
 
-  Future<List<Rating>> fetchRating() async {
+
+  void _onItemTapped(int index) async {
     setState(() {
-      isLoading = true; // Afficher le chargement
-    });
-
-    // final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/comments'));
-    final response = await http.get(Uri.parse('http://192.168.43.166:3000/ratings/ratings/${widget.id}'));
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body) as List<dynamic>;
-      print("ouais ratingggggggggggggggggggggggggggggggggggggg, ${data}");
-      final fetchedRating = data
-        .map((item) => Rating(
-              item['_id'] as String,
-              item['author'] as Map<String, dynamic>,
-              item['prestataire'] as String,
-              item['rating'] as int,
-              
-            ))
-        .toList();
-
-
-      setState(() {
-        isLoading = false; // Cacher le chargement
-        ratings = fetchedRating;
-        // print("ouaissssssssssss, ${commentaires}");
-        // _rating = fetchedRating.isNotEmpty ? data[1] : 0.0;
-      });
-
-      return fetchedRating;
-  } else {
-    throw Exception('Failed to fetch data from MongoDB');
-  }
-}
-
-
-  void lancerAppel(String numero) async {
-    String url = "tel:$numero";
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Impossible de lancer l\'appel au $numero';
-    }
-  }
-
-void _onItemTapped(int index) async {
-  setState(() {
-    _selectedIndex = index;
-    if (index == 1) {
-      // Affichez une boîte de dialogue ou naviguez vers une nouvelle page pour laisser un commentaire ici
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Laisser un commentaire'),
-            content: TextField(
-              controller: usernameController,
-              decoration: InputDecoration(hintText: 'Entrez votre commentaire ici'),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () async {
-                  // Ajoutez votre logique pour enregistrer le commentaire ici
-                  print("postttttttttttttttttttttt");
-                  await fetchData1(); // Attendre la fin de la requête POST
-                  print("Attente de 2 secondes...");
-                  await Future.delayed(Duration(seconds: 5)); // Attendre 2 secondes
-                  print("gettttttttttttttttttttttttt");
-                  await fetchData(); // Attendre la fin de la requête GET
-                  Navigator.of(context).pop();
-                },
-                child: Text('Envoyer'),
+      _selectedIndex = index;
+      if (index == 1) {
+        // Affichez une boîte de dialogue ou naviguez vers une nouvelle page pour laisser un commentaire ici
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text('Laisser un commentaire'),
+              content: TextField(
+                controller: usernameController,
+                decoration: InputDecoration(hintText: 'Entrez votre commentaire ici'),
               ),
-            ],
-          );
-        },
-      );
-    }
-  });
+              actions: [
+                TextButton(
+                  onPressed: () async {
+                    // Ajoutez votre logique pour enregistrer le commentaire ici
+                    await fetchData1();
+                    Navigator.of(context).pop();
+
+                    // Chargez à nouveau la liste des commentaires après avoir posté un commentaire
+                    await fetchData();
+                  },
+                  child: Text('Envoyer'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    });
 }
 
+
+  // void _onItemTapped(int index) {
+  //   setState(() {
+  //     _selectedIndex = index;
+  //     if (index == 1) {
+  //       // Affichez une boîte de dialogue ou naviguez vers une nouvelle page pour laisser un commentaire ici
+  //       showDialog(
+  //         context: context,
+  //         builder: (context) {
+  //           return AlertDialog(
+  //             title: Text('Laisser un commentaire'),
+  //             content: TextField(
+  //               controller: usernameController,
+  //               decoration: InputDecoration(hintText: 'Entrez votre commentaire ici'),
+  //             ),
+  //             actions: [
+  //               TextButton(
+  //                 onPressed: () {
+  //                   // Ajoutez votre logique pour enregistrer le commentaire ici
+  //                   fetchData1();
+  //                   Navigator.of(context).pop();
+  //                 },
+  //                 child: Text('Envoyer'),
+  //               ),
+  //             ],
+  //           );
+  //         },
+  //       );
+  //     }
+  //   });
+  // }
 
 
   Future<void> _pickImage() async {
@@ -322,18 +259,12 @@ void _onItemTapped(int index) async {
         commentaires = fetchedCommentaires;
       });
     });
-    fetchRating().then((fetchedRating) {
-      setState(() {
-        ratings = fetchedRating;
-      });
-    });
   }
   
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(),
       body:SingleChildScrollView(
         child: Container(
           width: MediaQuery.sizeOf(context).width,
@@ -381,16 +312,11 @@ void _onItemTapped(int index) async {
                           alignment: Alignment.bottomLeft,
                           padding: const EdgeInsets.all(8.0),
                           // color: Colors.black54,
-                          child: GestureDetector(
-                            onTap: (){
-                              lancerAppel("${widget.numero}");
-                            },
-                            child: Text(
-                              "Numéro : ${widget.numero}",
-                              style: const TextStyle(
-                                fontSize: 16,
-                                // color: Colors.white,
-                              ),
+                          child: Text(
+                            "Numéro : ${widget.numero}",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              // color: Colors.white,
                             ),
                           ),
                         ),
@@ -434,11 +360,6 @@ void _onItemTapped(int index) async {
                             ],
                           ),
                         ),
-                        _ratingBar(_ratingBarMode),
-                        Text(
-                          'Rating: $_rating',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
                         Center(child: const Divider(height: 80,)),
                         _comment()
           
@@ -480,106 +401,6 @@ void _onItemTapped(int index) async {
       ),    
     );
   }
-
-
-    Widget _ratingBar(int mode) {
-      switch (mode) {
-        case 1:
-          return RatingBar.builder(
-            initialRating: _rating,
-            // initialRating: _initialRating,
-            minRating: 1,
-            direction: _isVertical ? Axis.vertical : Axis.horizontal,
-            allowHalfRating: true,
-            unratedColor: Colors.amber.withAlpha(50),
-            itemCount: 5,
-            itemSize: 50.0,
-            itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-            itemBuilder: (context, _) => Icon(
-              _selectedIcon ?? Icons.star,
-              color: Colors.amber,
-            ),
-            onRatingUpdate: (rating) {
-              setState(() {
-                _rating = rating;
-              });
-              ratings.isEmpty ? postRating() : updateRating();
-            },
-            updateOnDrag: true,
-          );
-        case 2:
-          return RatingBar(
-            initialRating: _initialRating,
-            direction: _isVertical ? Axis.vertical : Axis.horizontal,
-            allowHalfRating: true,
-            itemCount: 5,
-            ratingWidget: RatingWidget(
-              // full: _image('assets/heart.png'),
-              full: Icon(Icons.abc),
-              half: Icon(Icons.abc),
-              empty: Icon(Icons.abc),
-              // half: _image('assets/heart_half.png'),
-              // empty: _image('assets/heart_border.png'),
-            ),
-            itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-            onRatingUpdate: (rating) {
-              setState(() {
-                _rating = rating;
-              });
-              ratings.isEmpty ? postRating() : updateRating();
-            },
-            updateOnDrag: true,
-          );
-        case 3:
-          return RatingBar.builder(
-            initialRating: _initialRating,
-            direction: _isVertical ? Axis.vertical : Axis.horizontal,
-            itemCount: 5,
-            itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-            itemBuilder: (context, index) {
-              switch (index) {
-                case 0:
-                  return const Icon(
-                    Icons.sentiment_very_dissatisfied,
-                    color: Colors.red,
-                  );
-                case 1:
-                  return const Icon(
-                    Icons.sentiment_dissatisfied,
-                    color: Colors.redAccent,
-                  );
-                case 2:
-                  return const Icon(
-                    Icons.sentiment_neutral,
-                    color: Colors.amber,
-                  );
-                case 3:
-                  return const Icon(
-                    Icons.sentiment_satisfied,
-                    color: Colors.lightGreen,
-                  );
-                case 4:
-                  return const Icon(
-                    Icons.sentiment_very_satisfied,
-                    color: Colors.green,
-                  );
-                default:
-                  return Container();
-              }
-            },
-            onRatingUpdate: (rating) {
-              setState(() {
-                _rating = rating;
-              });
-              ratings.isEmpty ? postRating() : updateRating();
-            },
-            updateOnDrag: true,
-          );
-        default:
-          return Container();
-    }
-  }
-
 
   Widget _profile() {
     return Container(
@@ -718,104 +539,6 @@ void _onItemTapped(int index) async {
   }
 
 }
-
-
-
-
-//   void _onItemTapped(int index) async {
-//     setState(() {
-//       _selectedIndex = index;
-//       if (index == 1) {
-//         // Affichez une boîte de dialogue ou naviguez vers une nouvelle page pour laisser un commentaire ici
-//         showDialog(
-//           context: context,
-//           builder: (context) {
-//             return AlertDialog(
-//               title: Text('Laisser un commentaire'),
-//               content: TextField(
-//                 controller: usernameController,
-//                 decoration: InputDecoration(hintText: 'Entrez votre commentaire ici'),
-//               ),
-//               actions: [
-//                 TextButton(
-//                   onPressed: () async {
-//                     // Ajoutez votre logique pour enregistrer le commentaire ici
-//                     print("postttttttttttttttttttttt");
-//                     await fetchData1(); // Attendre la fin de la requête POST
-//                     print("gettttttttttttttttttttttttt");
-//                     await fetchData(); // Attendre la fin de la requête GET
-//                     Navigator.of(context).pop();
-//                   },
-//                   child: Text('Envoyer'),
-//                 ),
-//               ],
-//             );
-//           },
-//         );
-//       }
-//     });
-// }
-
-
-  // void _onItemTapped(int index) {
-  //   setState(() {
-  //     _selectedIndex = index;
-  //     if (index == 1) {
-  //       // Affichez une boîte de dialogue ou naviguez vers une nouvelle page pour laisser un commentaire ici
-  //       showDialog(
-  //         context: context,
-  //         builder: (context) {
-  //           return AlertDialog(
-  //             title: Text('Laisser un commentaire'),
-  //             content: TextField(
-  //               controller: usernameController,
-  //               decoration: InputDecoration(hintText: 'Entrez votre commentaire ici'),
-  //             ),
-  //             actions: [
-  //               TextButton(
-  //                 onPressed: () {
-  //                   // Ajoutez votre logique pour enregistrer le commentaire ici
-  //                   print("postttttttttttttttttttttt");
-  //                   fetchData1();
-  //                   print("gettttttttttttttttttttttttt");
-  //                   fetchData();
-  //                   Navigator.of(context).pop();
-                    
-  //                 },
-  //                 child: Text('Envoyer'),
-  //               ),
-  //             ],
-  //           );
-  //         },
-  //       );
-  //     }
-  //   });
-  // }
-
-  // // Mettre à jour un rating
-  // Future<void> updateRating(double rating) async {
-  //   var apiUrl = 'https://ocean-52xt.onrender.com/users/partenaires/${widget.id}'; // Remplacez cela par votre URL d'API
-  //   var requestBody = {'rating': rating.toString()}; // Les données que vous voulez envoyer à la base de données
-
-  //   try {
-  //     var response = await http.put(
-  //       apiUrl as Uri,
-  //       body: requestBody,
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       // La requête a réussi
-  //       print('Rating enregistré avec succès dans la base de données.');
-  //     } else {
-  //       // La requête a échoué avec une erreur
-  //       print('Échec de l\'enregistrement du rating dans la base de données. Statut: ${response.statusCode}');
-  //     }
-  //   } catch (error) {
-  //     // Une erreur s'est produite lors de l'envoi de la requête
-  //     print('Erreur lors de l\'envoi de la requête: $error');
-  //   }
-  // } //A décommenter
-
 
 
 

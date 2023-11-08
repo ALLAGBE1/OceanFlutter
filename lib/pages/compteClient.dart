@@ -24,6 +24,10 @@ class CompteClient extends StatefulWidget {
 }
 
 class _CompteClientState extends State<CompteClient> {
+  // bool isPrestataire = true; // Utiliser une variable d'état locale
+  // bool isPrestataire = UserData.disponible; // Utiliser une variable d'état locale
+  // bool isPrestataire ? UserData.disponible : newState; // Utiliser une variable d'état locale
+  bool isPrestataire = true; // Utiliser une variable d'état locale
   File? _image;
   final ImagePicker _picker = ImagePicker();
 
@@ -33,6 +37,8 @@ class _CompteClientState extends State<CompteClient> {
   @override
   void initState() {
     super.initState();
+    // isPrestataire = UserData.disponible;
+    
     // Appel de la fonction pour obtenir la photo de profil de l'utilisateur
     // getProfilePhoto(UserData.id);
   }
@@ -59,9 +65,33 @@ class _CompteClientState extends State<CompteClient> {
     });
   }
 
+
+  // Fonction pour mettre à jour l'état du partenaire
+  Future<void> updatePrestataireState(bool newState) async {
+    final String apiUrl = 'https://ocean-52xt.onrender.com/users/prestataires/${UserData.id}';
+    print("Donne moi l'url : " + apiUrl);
+    try {
+      final response = await http.put(
+        Uri.parse('${apiUrl}'),
+        body: {'disponible': newState.toString()},
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          isPrestataire = newState;
+        });
+        print('État de la disponibilité du prestataire mis à jour avec succès');
+      } else {
+        print('Erreur lors de la mise à jour de l\'état de la disponibilité');
+      }
+    } catch (error) {
+      print('Erreur lors de la requête HTTP : $error');
+    }
+  }
+
 //   Future<void> getProfilePhoto(String userId) async {
 //   try {
-//     final response = await http.get(Uri.parse('http://192.168.31.206:3000/photoProfils/profilUser/${UserData.id}'));
+//     final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/photoProfils/profilUser/${UserData.id}'));
 //     if (response.statusCode == 200) {
 //       List<dynamic> data = json.decode(response.body);
 //       if (data.isNotEmpty) {
@@ -88,7 +118,7 @@ class _CompteClientState extends State<CompteClient> {
     var headers = {
       'Content-Type': 'application/json'
     };
-    var request = http.MultipartRequest('POST', Uri.parse('http://192.168.31.206:3000/photoProfils'));
+    var request = http.MultipartRequest('POST', Uri.parse('https://ocean-52xt.onrender.com/photoProfils'));
     request.fields.addAll({
       'userId': UserData.id
     });
@@ -367,16 +397,27 @@ Widget _profile() {
           Switch(
             activeColor: Colors.green,
             thumbIcon: thumbIcon,
-            // value: isDisponible,
-            value: UserData.disponible,
+            value: isPrestataire,
             onChanged: (bool value) {
               setState(() {
-                // isDisponible = value;
-                // updatePrestataireState(value);
-                UserData.disponible;
+                // isPrestataire = value;
+                updatePrestataireState(value);
               });
             },
           ),
+          // Switch(
+          //   activeColor: Colors.green,
+          //   thumbIcon: thumbIcon,
+          //   // value: isDisponible,
+          //   value: UserData.disponible,
+          //   onChanged: (bool value) {
+          //     setState(() {
+          //       // isDisponible = value;
+          //       // updatePrestataireState(value);
+          //       UserData.disponible;
+          //     });
+          //   },
+          // ),
         ],
       ),
     );

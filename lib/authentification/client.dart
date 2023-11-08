@@ -23,23 +23,29 @@ class _LeClientState extends State<LeClient> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
+  TextEditingController numeroController = TextEditingController();
 
   Future<void> enregistrerUtilisateur() async {
     String nomprenom = nomprenomController.text;
     String email = emailController.text;
     String password = passwordController.text;
     String username = usernameController.text;
+    String numero = numeroController.text;
+    // String numero = usernameController.text;
+    // int numeroEntier = int.parse(numero);
 
 
     // Effectuer la requête HTTP vers l'API Node.js pour enregistrer l'utilisateur
     try {
       var response = await http.post(
-        Uri.parse('http://192.168.31.206:3000/users/sinscrire'),
+        // Uri.parse('https://10.50.12.85:3000/users/sinscrire'),
+        Uri.parse('https://ocean-52xt.onrender.com/users/sinscrire'),
         body: {
           'nomprenom': nomprenom,
           'email': email,
           'username': username,
           'password': password,
+          'numero': numero,
         },
       );
 
@@ -153,13 +159,13 @@ class _LeClientState extends State<LeClient> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Center(child: Image.asset("img/logo.png", 
-                      // height: MediaQuery.sizeOf(context).height*0.30, 
-                      width: MediaQuery.sizeOf(context).width*0.50,
-                    ),),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.all(15.0),
+                  //   child: Center(child: Image.asset("img/logo.png", 
+                  //     // height: MediaQuery.sizeOf(context).height*0.30, 
+                  //     width: MediaQuery.sizeOf(context).width*0.50,
+                  //   ),),
+                  // ),
                   SizedBox(height: MediaQuery.sizeOf(context).height*0.030,),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -182,13 +188,16 @@ class _LeClientState extends State<LeClient> {
                 children: [
                   _nomprenom(),
                   _vnomprenom(),
-                  SizedBox(height: MediaQuery.sizeOf(context).height*0.020,),
+                  SizedBox(height: MediaQuery.sizeOf(context).height*0.010,),
                   _username(),
                   _vusername(),
-                  SizedBox(height: MediaQuery.sizeOf(context).height*0.020,),
+                  SizedBox(height: MediaQuery.sizeOf(context).height*0.010,),
                   _email(),
                   _vemail(),
-                  SizedBox(height: MediaQuery.sizeOf(context).height*0.020,),
+                   SizedBox(height: MediaQuery.sizeOf(context).height*0.010,),
+                  _numero(),
+                  _vnumero(),
+                  SizedBox(height: MediaQuery.sizeOf(context).height*0.010,),
                   _motdepasse(),
                   _vmotdepasse(),
                   // _connect()
@@ -334,6 +343,37 @@ class _LeClientState extends State<LeClient> {
       child: CupertinoTextField(
         controller: emailController,
         placeholder: "Numéro de téléphone ou Email",
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.greenAccent),
+          borderRadius: BorderRadius.circular(5),
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  Widget _numero() {
+    return Container(
+      alignment: Alignment.bottomLeft,
+      padding: const EdgeInsets.only(left: 10.0),
+      child: Text(
+        "Numéro de téléphone",
+        style: GoogleFonts.acme(
+          color: Colors.white,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _vnumero() {
+    return Container(
+      height: 58,
+      margin: const EdgeInsets.all(10),
+      child: CupertinoTextField(
+        controller: numeroController,
+        placeholder: "Numéro de téléphone",
         decoration: BoxDecoration(
           border: Border.all(color: Colors.greenAccent),
           borderRadius: BorderRadius.circular(5),

@@ -26,13 +26,13 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
   String documentFourni = ""; // Déclarer la variable en dehors du bloc if
   TextEditingController usernameController = TextEditingController();
   
-
   Future<void> postVerification() async {
-    String username = usernameController.text;
+  String username = usernameController.text;
+  try {
     var headers = {
       'Content-Type': 'application/json'
     };
-    var request = http.Request('POST', Uri.parse('http://192.168.31.206:3000/users/verification'));
+    var request = http.Request('POST', Uri.parse('https://ocean-52xt.onrender.com/users/verification'));
     request.body = json.encode({
       "username": UserData.username,
       "verificationCode": username,
@@ -55,7 +55,43 @@ class _ConfirmationScreenState extends State<ConfirmationScreen> {
       // Gérez les erreurs ici, vous pouvez renvoyer une liste vide ou lancer une exception selon le cas
       throw Exception('Erreur lors de la création du commentaire');
     }
+  } catch (error) {
+    // Gérez l'erreur ici (imprimez-la ou effectuez d'autres actions nécessaires)
+    print('Erreur lors de la requête HTTP : $error');
+    // Vous pouvez également afficher un message d'erreur à l'utilisateur si nécessaire
   }
+}
+
+
+  // Future<void> postVerification() async {
+  //   String username = usernameController.text;
+  //   var headers = {
+  //     'Content-Type': 'application/json'
+  //   };
+  //   var request = http.Request('POST', Uri.parse('https://ocean-52xt.onrender.com/users/verification'));
+  //   request.body = json.encode({
+  //     "username": UserData.username,
+  //     "verificationCode": username,
+  //   });
+  //   request.headers.addAll(headers);
+
+  //   http.StreamedResponse response = await request.send();
+
+  //   if (response.statusCode == 200) {
+  //     var jsonString = await response.stream.bytesToString();
+  //     print(jsonString);
+      
+  //     Navigator.pushAndRemoveUntil(
+  //       context, 
+  //       MaterialPageRoute(builder: (context) => BottomNavBar(documentFourni: documentFourni)), 
+  //       (route) => false
+  //     );
+  //     // return commentaires;
+  //   } else {
+  //     // Gérez les erreurs ici, vous pouvez renvoyer une liste vide ou lancer une exception selon le cas
+  //     throw Exception('Erreur lors de la création du commentaire');
+  //   }
+  // }
 
   
 

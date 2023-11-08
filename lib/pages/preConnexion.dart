@@ -47,6 +47,8 @@ class _PreConnexionState extends State<PreConnexion> {
     print("222222222222222222222222222222222222222222 ${nomprenom}");
     String? email = prefs.getString('email');
     print("333333333333333333333333333333333333333333 ${email}");
+    int? numero = prefs.getInt('numero');
+    print("333333333333333333333333333333333333333333 ${numero}");
     String? documentfournirId = prefs.getString('documentfournirId');
     print("4444444444444444444444444444444444444444444 ${documentfournirId}");
     String? domaineactivite = prefs.getString('domaineactivite');
@@ -74,6 +76,7 @@ class _PreConnexionState extends State<PreConnexion> {
         UserData.photoProfil = photoProfil;
         UserData.nomprenom = nomprenom;
         UserData.email = email;
+        UserData.numero = numero?? UserData.numero; //Je dois revoir si possible cette ligne;
         UserData.documentfournirId = documentfournirId;
         UserData.domaineactivite = domaineactivite;
         UserData.nomcommercial = nomcommercial;

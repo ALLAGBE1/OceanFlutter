@@ -1,7 +1,7 @@
 // ignore_for_file: unnecessary_string_interpolations, avoid_print, constant_identifier_names, unnecessary_brace_in_string_interps, prefer_const_declarations
 
 import 'dart:convert';
-// import 'dart:ffi';
+import 'dart:ffi';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,9 +9,10 @@ import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:ocean/authentification/user_data.dart';
 import 'package:ocean/modeles/modelePrestataire.dart';
 import 'package:ocean/pages/carte_page_map.dart';
-import 'package:ocean/pages/resultatRecherche.dart';
+// import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 
 class Metier {
@@ -75,7 +76,7 @@ class _AccueilState extends State<Accueil> {
       isLoading = true; // Afficher le chargement
     });
 
-    final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/domaineActivite/'));
+    final response = await http.get(Uri.parse('http://192.168.31.206:3000/domaineActivite/'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as List<dynamic>;
@@ -111,7 +112,7 @@ class _AccueilState extends State<Accueil> {
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      final apiUrl = 'https://ocean-52xt.onrender.com/users/prestataires/$type?lat=${position.latitude}&lng=${position.longitude}';
+      final apiUrl = 'http://192.168.31.206:3000/users/prestataires/$type?lat=${position.latitude}&lng=${position.longitude}';
       print("Je veux voir l'url.......................... : ${apiUrl}");
       final response = await http.get(Uri.parse(apiUrl));
 
@@ -151,7 +152,7 @@ class _AccueilState extends State<Accueil> {
 
 
   Future<List<Publicites>> fetchPublicites() async {
-    final apiUrl = 'https://ocean-52xt.onrender.com/publier';
+    final apiUrl = 'http://192.168.31.206:3000/publier';
 
     try {
       final response = await http.get(Uri.parse(apiUrl));
@@ -214,7 +215,7 @@ class _AccueilState extends State<Accueil> {
               padding: const EdgeInsets.only(top: 25.0),
               child: _vsearch(),
             ),
-            // const SizedBox(height: 8,),
+            const SizedBox(height: 8,),
             _plusconsommes(),
             const SizedBox(height: 12,),
             Expanded(
@@ -233,74 +234,69 @@ class _AccueilState extends State<Accueil> {
 
 
   Widget _mainContent() {
-    return Center(
-      child: Column(
-        children: [
-          FutureBuilder<List<Publicites>>(
-            future: publicitesFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              } else if (snapshot.hasError) {
-                return const Text('Erreur lors du chargement des publicités');
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return const Center(child: Text("Espace pub"));
-              } else {
-                return CarouselSlider.builder(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index, realIndex) {
-                    final imageUrl = snapshot.data![index].imagepublier;
-                    return Container(
-                      margin: const EdgeInsets.only(top: 15),
-                      height: MediaQuery.of(context).size.height * 0.23,
-                      width: MediaQuery.of(context).size.width * 0.90,
-                      decoration: const BoxDecoration(color: Colors.grey),
-                      child: CachedNetworkImage(
-                        imageUrl: imageUrl!,
-                        placeholder: (context, imageUrl) =>
-                            const CircularProgressIndicator(),
-                        errorWidget: (context, imageUrl, error) =>
-                            const Icon(Icons.error),
-                        fit: BoxFit.cover,
-                      ),
-                    );
-                  },
-                  options: CarouselOptions(
-                    autoPlay: true,
-                    aspectRatio: 16 / 9, // Ajustez la proportion comme nécessaire
-                    viewportFraction: 0.9, // Ajustez la fraction de l'écran visible comme nécessaire
-                  ),
-                );
-              }
-            },
-          ),
-          const SizedBox(height: 50,),
-          // const Text("Nous vous offrons simplement et rapidement des préstataire dans votre zone", style: TextStyle(fontSize: 20),),
-          // const SizedBox(height: 50,),
-          // const Text("Océan vous offre différents types de prestataires, tels que des électriciens, des garagistes, des plombiers, des mécaniciens, des coiffeurs et des coiffeuses...", style: TextStyle(fontSize: 20),),
-          const SizedBox(child: Text("Recommandations")),
-          const SizedBox(height: 20,),
-          Expanded(
-            child: GridView.count(
-              crossAxisCount: 2,
-              children: List.generate(100, (index) {
-                return Center(
-                  child: Container(
+    return Column(
+      children: [
+        FutureBuilder<List<Publicites>>(
+          future: publicitesFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return const Text('Erreur lors du chargement des publicités');
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text("Espace pub"));
+            } else {
+              return CarouselSlider.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index, realIndex) {
+                  final imageUrl = snapshot.data![index].imagepublier;
+                  return Container(
+                    margin: const EdgeInsets.only(top: 15),
+                    height: MediaQuery.of(context).size.height * 0.23,
+                    width: MediaQuery.of(context).size.width * 0.90,
                     decoration: const BoxDecoration(color: Colors.grey),
-                    child: Padding(
-                      padding: const EdgeInsets.all(52.0),
-                      child: Text(
-                        'Item $index',
-                        // style: Theme.of(context).textTheme.headline5,
-                      ),
+                    child: CachedNetworkImage(
+                      imageUrl: imageUrl!,
+                      placeholder: (context, imageUrl) =>
+                          const CircularProgressIndicator(),
+                      errorWidget: (context, imageUrl, error) =>
+                          const Icon(Icons.error),
+                      fit: BoxFit.cover,
+                    ),
+                  );
+                },
+                options: CarouselOptions(
+                  autoPlay: true,
+                  aspectRatio: 16 / 9, // Ajustez la proportion comme nécessaire
+                  viewportFraction: 0.9, // Ajustez la fraction de l'écran visible comme nécessaire
+                ),
+              );
+            }
+          },
+        ),
+        const SizedBox(height: 20,),
+        const SizedBox(child: Text("Recommandations")),
+        const SizedBox(height: 20,),
+        Expanded(
+          child: GridView.count(
+            crossAxisCount: 2,
+            children: List.generate(100, (index) {
+              return Center(
+                child: Container(
+                  decoration: const BoxDecoration(color: Colors.grey),
+                  child: Padding(
+                    padding: const EdgeInsets.all(52.0),
+                    child: Text(
+                      'Item $index',
+                      // style: Theme.of(context).textTheme.headline5,
                     ),
                   ),
-                );
-              }),
-            ),
+                ),
+              );
+            }),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -454,20 +450,41 @@ class _AccueilState extends State<Accueil> {
                                                 ],
                                               ),
                                             ),
+                                            // Expanded(
+                                            //   child: Row(
+                                            //     children: [
+                                            //       const Icon(Icons.directions_walk),
+                                            //       const SizedBox(width: 3,),
+                                            //       Text("${prestataire.distance} m")
+                                            //     ],
+                                            //   ),
+                                            // )
                                           ],
                                         ),
                                         Row(
                                           children: [
-                                            Expanded(
+                                            const Expanded(
                                               child: Row(
                                                 children: [
-                                                  const Icon(Icons.contact_phone_outlined),
-                                                  const SizedBox(width: 3,),
+                                                  Icon(Icons.contact_phone_outlined),
+                                                  SizedBox(width: 3,),
                                                   // Text("0585649579")
-                                                  Text("${prestataire.numero.toString()}"), 
+                                                  // Text($"{prestataire.numero.toString()}"), 
+                                                  Text("${UserData.numero}"), 
                                                 ],
                                               ),
                                             ),
+                                            // Expanded(
+                                            //   child: Row(
+                                            //     children: [
+                                            //       Icon(Icons.star_rate_outlined),
+                                            //       SizedBox(width: 3,),
+                                            //       // Text("Notes")
+                                            //       // Text("Rating: ${prestataire.rating}"),
+                                                  
+                                            //     ],
+                                            //   ),
+                                            // ),
                                             Expanded(
                                               child: Row(
                                                 children: [
@@ -500,9 +517,7 @@ class _AccueilState extends State<Accueil> {
       );
 }
 
-  Widget _vsearch() {
-    String searchTerm = ''; // Le terme de recherche saisi par l'utilisateur
-
+Widget _vsearch() {
     return Container(
       margin: const EdgeInsets.all(15),
       child: CupertinoTextField(
@@ -512,16 +527,6 @@ class _AccueilState extends State<Accueil> {
           child: Icon(Icons.search),
         ),
         placeholder: "Rechercher un prestataire",
-        onChanged: (value) {
-          // Mettez à jour le terme de recherche à mesure que l'utilisateur tape
-          setState(() {
-            searchTerm = value;
-          });
-        },
-        onSubmitted: (value) {
-          // Effectuez la recherche lorsque l'utilisateur appuie sur "Rechercher" dans le clavier
-          // _performSearch(context, searchTerm);
-        },
         decoration: BoxDecoration(
           border: Border.all(color: Colors.greenAccent),
           borderRadius: BorderRadius.circular(5),
@@ -530,37 +535,6 @@ class _AccueilState extends State<Accueil> {
       ),
     );
   }
-
-  void _performSearch(BuildContext context, String searchTerm) {
-    // Effectuez la recherche ici en utilisant le terme de recherche (searchTerm)
-    // Appelez l'API avec le terme de recherche et affichez les résultats dans une autre interface utilisateur
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ResultatRecherche(),
-      ),
-    );
-  }
-
-
-// Widget _vsearch() {
-//     return Container(
-//       margin: const EdgeInsets.all(15),
-//       child: CupertinoTextField(
-//         padding: const EdgeInsets.all(13),
-//         prefix: const Padding(
-//           padding: EdgeInsets.only(left: 15.0),
-//           child: Icon(Icons.search),
-//         ),
-//         placeholder: "Rechercher un prestataire",
-//         decoration: BoxDecoration(
-//           border: Border.all(color: Colors.greenAccent),
-//           borderRadius: BorderRadius.circular(5),
-//           color: Colors.white,
-//         ),
-//       ),
-//     );
-//   }
 
 }
 
@@ -716,8 +690,3 @@ class _AccueilState extends State<Accueil> {
   //     color: Colors.amber,
   //   );
   // }
-
-
-
-  // Il n'y a pas de prestataire à vous recommander. Vous pouvez faire la recherche au niveau des menus ou dans la
-  //barre de recherche en mettant le nom du prestataire

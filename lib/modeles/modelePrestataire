@@ -94,7 +94,7 @@ class _ModelePrestataireState extends State<ModelePrestataire> {
 
   // TextEditingController nomprenomController = TextEditingController();
   Future<void> _saveRatingToDatabase(double rating) async {
-    var apiUrl = 'http://192.168.31.206:3000/users/partenaires/${widget.id}'; // Remplacez cela par votre URL d'API
+    var apiUrl = 'http://192.168.43.166:3000/users/partenaires/${widget.id}'; // Remplacez cela par votre URL d'API
     var requestBody = {'rating': rating.toString()}; // Les données que vous voulez envoyer à la base de données
 
     try {
@@ -123,7 +123,7 @@ class _ModelePrestataireState extends State<ModelePrestataire> {
     var headers = {
       'Content-Type': 'application/json'
     };
-    var request = http.Request('POST', Uri.parse('http://192.168.31.206:3000/comments'));
+    var request = http.Request('POST', Uri.parse('http://192.168.43.166:3000/comments'));
     request.body = json.encode({
       "comment": username,
       "author": UserData.id,
@@ -150,8 +150,8 @@ class _ModelePrestataireState extends State<ModelePrestataire> {
       isLoading = true; // Afficher le chargement
     });
 
-    // final response = await http.get(Uri.parse('http://192.168.31.206:3000/comments'));
-    final response = await http.get(Uri.parse('http://192.168.31.206:3000/comments/commentaires/${widget.id}'));
+    // final response = await http.get(Uri.parse('http://192.168.43.166:3000/comments'));
+    final response = await http.get(Uri.parse('http://192.168.43.166:3000/comments/commentaires/${widget.id}'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as List<dynamic>;
@@ -609,7 +609,7 @@ class _ModelePrestataireState extends State<ModelePrestataire> {
 //     // Effectuer la requête HTTP vers l'API Node.js pour enregistrer l'utilisateur
 //     try {
 //       var response = await http.post(
-//         Uri.parse('http://192.168.31.206:3000/users/sinscrire'),
+//         Uri.parse('http://192.168.43.166:3000/users/sinscrire'),
 //         body: {
 //           'nomprenom': nomprenom,
 //         },
@@ -643,7 +643,7 @@ class _ModelePrestataireState extends State<ModelePrestataire> {
 
 //   // Fonction pour mettre à jour l'état du partenaire
 //   Future<void> updatePrestataireState(bool newState) async {
-//     final String apiUrl = 'http://192.168.31.206:3000/users/partenaires/${widget.id}';
+//     final String apiUrl = 'http://192.168.43.166:3000/users/partenaires/${widget.id}';
 //     print("Donne moi l'url : " + apiUrl);
 //     try {
 //       final response = await http.put(

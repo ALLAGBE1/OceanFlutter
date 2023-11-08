@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // bool isLoading = true;
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Ocean',
       theme: ThemeData(
         
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),

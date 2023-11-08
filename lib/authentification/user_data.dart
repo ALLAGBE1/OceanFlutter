@@ -9,6 +9,8 @@ class UserData {
   static String domaineactivite = '';
   static bool isAdmin = false;
   static bool disponible = true;
+  static int numero = 0;
+  // static bool disponible = UserData.disponible;
   static String documentfournirId = '';
   static String latitude = '';
   static String longitude = '';

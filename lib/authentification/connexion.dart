@@ -69,7 +69,7 @@ class _ConnexionState extends State<Connexion> {
 
     try {
       var response = await http.post(
-        Uri.parse('http://192.168.31.206:3000/users/connexion/'),
+        Uri.parse('https://ocean-52xt.onrender.com/users/connexion/'),
         body: {
           'password': password,
           'username': username,
@@ -96,6 +96,7 @@ class _ConnexionState extends State<Connexion> {
           print("Ouaissssssssssssssssssssss ${id}");
           String nomprenom = cordonnees["nomprenom"];
           String email = cordonnees["email"];
+          int numero = cordonnees["numero"];
           String photoProfil = cordonnees["photoProfil"];
           bool confirmation = cordonnees["confirmation"];
           String nomcommercial = cordonnees["nomcommercial"];
@@ -108,6 +109,7 @@ class _ConnexionState extends State<Connexion> {
           UserData.username = username;
           UserData.nomprenom = nomprenom;
           UserData.email = email;
+          UserData.numero = numero;
           UserData.photoProfil = photoProfil;
           UserData.confirmation = confirmation;
           UserData.nomcommercial = nomcommercial;
@@ -143,6 +145,7 @@ class _ConnexionState extends State<Connexion> {
           prefs.setString('username', UserData.username);
           prefs.setString('nomprenom', UserData.nomprenom);
           prefs.setString('email', UserData.email);
+          prefs.setInt('numero', UserData.numero);
           prefs.setString('photoProfil', UserData.photoProfil);
           prefs.setBool('confirmation', UserData.confirmation);
           prefs.setString('nomcommercial', UserData.nomcommercial);
@@ -348,7 +351,7 @@ class _ConnexionState extends State<Connexion> {
   Widget _email() {
     return Container(
       child: Text(
-        "Email ou numéro de téléphone",
+        "Username",
         style: GoogleFonts.acme(
           color: Colors.white,
           fontSize: 18,
@@ -364,7 +367,7 @@ class _ConnexionState extends State<Connexion> {
       margin: const EdgeInsets.all(10),
       child: CupertinoTextField(
         controller: usernameController,
-        placeholder: "Adresse mail",
+        placeholder: "Username",
         decoration: BoxDecoration(
           border: Border.all(color: Colors.greenAccent),
           borderRadius: BorderRadius.circular(5),

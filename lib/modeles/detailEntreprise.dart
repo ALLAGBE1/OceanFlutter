@@ -56,7 +56,7 @@ class _DetailEntrepriseState extends State<DetailEntreprise> {
 
           // Envoyez la requête PUT à l'API
           var response = await http.put(
-            Uri.parse('http://192.168.31.206:3000/users/prestataires/${UserData.id}'),
+            Uri.parse('https://ocean-52xt.onrender.com/users/prestataires/${UserData.id}'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
             },
@@ -93,43 +93,109 @@ class _DetailEntrepriseState extends State<DetailEntreprise> {
         title: const Text("Détails de l'entreprise"),
       ),
       body: Container(
+        width: MediaQuery.sizeOf(context).width,
+        height: MediaQuery.sizeOf(context).height,
+        decoration: BoxDecoration(
+            color: Colors.grey,
+            border: Border.all(color: Colors.grey, width: 1.5),
+            image: const DecorationImage(image: AssetImage('img/background.jpg'), fit: BoxFit.cover) // Changed Image.asset to AssetImage
+          ),
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("${UserData.nomprenom}", style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold)),
-            Text("Domaine d'activité : ${UserData.domaineactivite}"),
-            Text("Disponible : ${UserData.disponible}"),
-            Text("Nom commercial : ${UserData.nomcommercial}"),
-            Text("Email : ${UserData.email}"),
-            Text("Latitude : ${UserData.latitude}"), 
-            Text("Longitude : ${UserData.longitude}"),
-            Text("Nom du lieu : ${UserData.nomDuLieu}"),
-            Text("Id de l'utilisateur : ${UserData.id}"),
+            Center(child: Text("${UserData.nomprenom}", style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold, color: Colors.white), textAlign: TextAlign.center,)),
+            const SizedBox(height: 15,),
+            Text("Domaine d'activité : ${UserData.domaineactivite}", style: const TextStyle(color: Colors.white),),
+            const SizedBox(height: 15,),
+            Text("Disponible : ${UserData.disponible}", style: const TextStyle(color: Colors.white),),
+            const SizedBox(height: 15,),
+            Text("Nom commercial : ${UserData.nomcommercial}", style: const TextStyle(color: Colors.white),),
+            const SizedBox(height: 15,),
+            Text("Email : ${UserData.email}", style: const TextStyle(color: Colors.white),),
+            const SizedBox(height: 15,),
+            Text("Numéro : ${UserData.numero}", style: const TextStyle(color: Colors.white),),
+            const SizedBox(height: 15,),
+            Text("Latitude : ${UserData.latitude}", style: const TextStyle(color: Colors.white),),
+            const SizedBox(height: 15,), 
+            Text("Longitude : ${UserData.longitude}", style: const TextStyle(color: Colors.white),),
+            const SizedBox(height: 15,),
+            Text("Nom du lieu : ${UserData.nomDuLieu}", style: const TextStyle(color: Colors.white),),
+            const SizedBox(height: 15,),
+            // Text("Id de l'utilisateur : ${UserData.id}", style: const TextStyle(color: Colors.white),),
 
             const SizedBox(height: 20.0), // Espacement
             // ElevatedButton(
             //   onPressed: _getLocation,
             //   child: const Text("Mise à jour de la position"),
             // ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  isLocationUpdated = true; // Mettez à jour le drapeau ici
-                });
-                _getLocation();
-              },
-              child: const Text("Mise à jour de la position"),
+            // Center(
+            //   child: ElevatedButton(
+            //     onPressed: () {
+            //       setState(() {
+            //         isLocationUpdated = true; // Mettez à jour le drapeau ici
+            //       });
+            //       _getLocation();
+            //     },
+            //     child: const Text("Mise à jour de la position"),
+            //   ),
+            // ),
+            // const SizedBox(height: 20.0), // Espacement
+            // const Text("Coordonnées géographiques :"),
+            // Text("Latitude: $_latitude"),
+            // Text("Longitude: $_longitude"),
+
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    isLocationUpdated = true; // Mettez à jour le drapeau ici
+                  });
+                  _getLocation();
+                  _showLocationDialog(); // Afficher le dialogue après la mise à jour
+                },
+                child: const Text("Mise à jour de la position"),
+              ),
             ),
             const SizedBox(height: 20.0), // Espacement
-            const Text("Coordonnées géographiques :"),
-            Text("Latitude: $_latitude"),
-            Text("Longitude: $_longitude"),
+            
+           
           ],
         ),
       ),
     );
   }
+
+  AlertDialog _buildLocationDialog(BuildContext context) {
+  return AlertDialog(
+    title: const Text("Coordonnées géographiques :"),
+    content: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Latitude: $_latitude"),
+        Text("Longitude: $_longitude"),
+      ],
+    ),
+    actions: <Widget>[
+      TextButton(
+        onPressed: () {
+          Navigator.of(context).pop(); // Fermer le dialogue lorsque le bouton est cliqué
+        },
+        child: const Text('Fermer'),
+      ),
+    ],
+  );
+}
+
+void _showLocationDialog() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return _buildLocationDialog(context);
+    },
+  );
+}
 }
 
 
@@ -237,7 +303,7 @@ class _DetailEntrepriseState extends State<DetailEntreprise> {
 
 //       // Envoyez la requête PUT à l'API
 //       var response = await http.put(
-//         Uri.parse('http://192.168.31.206:3000/users/prestataires/${UserData.id}'),
+//         Uri.parse('https://ocean-52xt.onrender.com/users/prestataires/${UserData.id}'),
 //         headers: <String, String>{
 //           'Content-Type': 'application/json; charset=UTF-8',
 //         },
@@ -273,7 +339,7 @@ class _DetailEntrepriseState extends State<DetailEntreprise> {
 
 //     //   // Envoyez la requête PUT à l'API
 //     //   var response = await http.put(
-//     //     Uri.parse('http://192.168.31.206:3000/users/prestataires/${UserData.id}'),
+//     //     Uri.parse('https://ocean-52xt.onrender.com/users/prestataires/${UserData.id}'),
 //     //     headers: <String, String>{
 //     //       'Content-Type': 'application/json; charset=UTF-8',
 //     //     },
@@ -389,7 +455,7 @@ class _DetailEntrepriseState extends State<DetailEntreprise> {
 //   Future<void> enregistrerUtilisateur() async {
 
 //     // Créez une requête multipart
-//     var uri = Uri.parse('http://192.168.31.206:3000/users/sinscrire');
+//     var uri = Uri.parse('https://ocean-52xt.onrender.com/users/sinscrire');
 //     var request = http.MultipartRequest('POST', uri)
 //       ..fields['location'] = jsonEncode({
 //         'type': 'Point',
@@ -527,7 +593,7 @@ class _DetailEntrepriseState extends State<DetailEntreprise> {
   //     isLoading = true; // Afficher le chargement
   //   });
 
-  //   final response = await http.get(Uri.parse('http://192.168.31.206:3000/users/partenaires'));
+  //   final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/users/partenaires'));
 
   //   if (response.statusCode == 200) {
   //     final data = jsonDecode(response.body) as List<dynamic>;
