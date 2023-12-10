@@ -1,5 +1,6 @@
 class UserData {
   static String id = '';
+  static String token = '';
   static String username = '';
   static String nomprenom = '';
   static String email = '';

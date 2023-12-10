@@ -7,6 +7,7 @@ import 'dart:math' as math;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:ocean/authentification/user_data.dart';
 import 'package:ocean/modeles/modelePartenaire.dart';
 import 'package:ocean/pages/publicite.dart';
 import 'package:ocean/publicites/publicites.dart';
@@ -43,11 +44,17 @@ class _AdminPageState extends State<AdminPage> {
   bool isLoading = true;
 
   Future<List<Partenaire>> fetchData() async {
+  try {
     setState(() {
       isLoading = true; // Afficher le chargement
     });
 
-    final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/users/partenaires'));
+    const String apiUrl = 'https://ocean-52xt.onrender.com/users/partenaires';
+    final Map<String, String> headers = {
+      'Authorization': 'Bearer ${UserData.token}',
+    };
+
+    final response = await http.get(Uri.parse(apiUrl), headers: headers);
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as List<dynamic>;
@@ -59,10 +66,8 @@ class _AdminPageState extends State<AdminPage> {
               item['domaineactivite'] as String,
               item['downloadUrl'] as String,  // Ajoutez ceci
               item['prestataire'] as bool,
-              
             ))
         .toList();
-
 
       setState(() {
         isLoading = false; // Cacher le chargement
@@ -73,7 +78,53 @@ class _AdminPageState extends State<AdminPage> {
     } else {
       throw Exception('Failed to fetch data from MongoDB');
     }
+  } catch (e) {
+    print('Une exception s\'est produite lors de la récupération des données: $e');
+    // Gérer l'exception ici, par exemple, afficher un message d'erreur à l'utilisateur.
+    return []; // Retourner une liste vide ou une valeur par défaut en cas d'erreur.
   }
+}
+
+  // Future<List<Partenaire>> fetchData() async {
+  //   setState(() {
+  //     isLoading = true; // Afficher le chargement
+  //   });
+
+  //   const String apiUrl = 'https://ocean-52xt.onrender.com/users/partenaires';
+  //   final Map<String, String> headers = {
+  //     'Authorization':
+  //         'Bearer ${UserData.token}',
+  //   };
+
+  //   final response = await http.get(Uri.parse(apiUrl), headers: headers);
+
+  //   // final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/users/partenaires'));
+
+  //   if (response.statusCode == 200) {
+  //     final data = jsonDecode(response.body) as List<dynamic>;
+  //     final fetchedPartenaires = data
+  //       .map((item) => Partenaire(
+  //             item['_id'] as String,
+  //             item['nomprenom'] as String,
+  //             item['email'] as String,
+  //             item['domaineactivite'] as String,
+  //             item['downloadUrl'] as String,  // Ajoutez ceci
+  //             item['prestataire'] as bool,
+              
+  //           ))
+  //       .toList();
+
+
+  //     setState(() {
+  //       isLoading = false; // Cacher le chargement
+  //       partenaires = fetchedPartenaires;
+  //     });
+
+  //     return fetchedPartenaires;
+  //   } else {
+  //     throw Exception('Failed to fetch data from MongoDB');
+  //   }
+  // }
 
   void _showAction(BuildContext context, int index) {
     showDialog<void>(

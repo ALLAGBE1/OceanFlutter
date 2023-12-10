@@ -169,14 +169,9 @@ class _DetailEntrepriseState extends State<DetailEntreprise> {
 
   AlertDialog _buildLocationDialog(BuildContext context) {
   return AlertDialog(
-    title: const Text("Coordonnées géographiques :"),
-    content: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("Latitude: $_latitude"),
-        Text("Longitude: $_longitude"),
-      ],
-    ),
+    // title: const Text("Votre position géographique a été mise à jour avec succès."),
+    // title: const Text("Coordonnées géographiques :"),
+    content: const Text("Votre position géographique a été mise à jour avec succès.", style: TextStyle(fontSize: 20),),
     actions: <Widget>[
       TextButton(
         onPressed: () {

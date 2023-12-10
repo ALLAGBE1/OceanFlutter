@@ -3,6 +3,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 // import 'package:ocean/authentification/connexion.dart';
 import 'package:ocean/authentification/enregistrement.dart';
@@ -17,6 +18,7 @@ class LeClient extends StatefulWidget {
   State<LeClient> createState() => _LeClientState();
 }
 class _LeClientState extends State<LeClient> {
+  bool isLoading = false;
   bool _obscureText = true; // définir l'état initial comme étant masqué
 
   TextEditingController nomprenomController = TextEditingController();
@@ -33,6 +35,10 @@ class _LeClientState extends State<LeClient> {
     String numero = numeroController.text;
     // String numero = usernameController.text;
     // int numeroEntier = int.parse(numero);
+
+    setState(() {
+      isLoading = true;
+    });
 
 
     // Effectuer la requête HTTP vers l'API Node.js pour enregistrer l'utilisateur
@@ -138,107 +144,176 @@ class _LeClientState extends State<LeClient> {
         },
       );
     }
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        dragStartBehavior: DragStartBehavior.down,
-        child: Container(
-          width: MediaQuery.sizeOf(context).width,
-          height: MediaQuery.sizeOf(context).height,
-          decoration: BoxDecoration(
-              color: Colors.grey,
-              border: Border.all(color: Colors.grey, width: 1.5),
-              image: const DecorationImage(image: AssetImage('img/background.jpg'), fit: BoxFit.cover) // Changed Image.asset to AssetImage
-            ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: Stack(
+        alignment: Alignment.center,
+        children: [
+          SingleChildScrollView(
+            dragStartBehavior: DragStartBehavior.down,
+            child: Container(
+              width: MediaQuery.sizeOf(context).width,
+              height: MediaQuery.sizeOf(context).height,
+              decoration: BoxDecoration(
+                  color: Colors.grey,
+                  border: Border.all(color: Colors.grey, width: 1.5),
+                  image: const DecorationImage(image: AssetImage('img/background.jpg'), fit: BoxFit.cover) // Changed Image.asset to AssetImage
+                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  // Padding(
-                  //   padding: const EdgeInsets.all(15.0),
-                  //   child: Center(child: Image.asset("img/logo.png", 
-                  //     // height: MediaQuery.sizeOf(context).height*0.30, 
-                  //     width: MediaQuery.sizeOf(context).width*0.50,
-                  //   ),),
-                  // ),
-                  SizedBox(height: MediaQuery.sizeOf(context).height*0.030,),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      IconButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const Enregistrement()));
-                          },
-                          icon: const Icon(Icons.bolt_outlined), color: Colors.yellowAccent,),
-                      _entetetext(),
+                      // Padding(
+                      //   padding: const EdgeInsets.all(15.0),
+                      //   child: Center(child: Image.asset("img/logo.png", 
+                      //     // height: MediaQuery.sizeOf(context).height*0.30, 
+                      //     width: MediaQuery.sizeOf(context).width*0.50,
+                      //   ),),
+                      // ),
+                      SizedBox(height: MediaQuery.sizeOf(context).height*0.030,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const Enregistrement()));
+                              },
+                              icon: const Icon(Icons.bolt_outlined), color: Colors.yellowAccent,),
+                          _entetetext(),
+                        ],
+                      ),
                     ],
                   ),
-                ],
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _nomprenom(),
-                  _vnomprenom(),
-                  SizedBox(height: MediaQuery.sizeOf(context).height*0.010,),
-                  _username(),
-                  _vusername(),
-                  SizedBox(height: MediaQuery.sizeOf(context).height*0.010,),
-                  _email(),
-                  _vemail(),
-                   SizedBox(height: MediaQuery.sizeOf(context).height*0.010,),
-                  _numero(),
-                  _vnumero(),
-                  SizedBox(height: MediaQuery.sizeOf(context).height*0.010,),
-                  _motdepasse(),
-                  _vmotdepasse(),
-                  // _connect()
-                ],
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    width: 180,
-                    decoration: BoxDecoration(
-                      // color: Colors.blue,
-                      border: Border.all(style: BorderStyle.solid, color: Colors.white),
-                      borderRadius: const BorderRadius.all(Radius.circular(0.1))
-                    ),
-                    child: TextButton(onPressed: (){
-                      enregistrerUtilisateur();
-                    }, child: Text(
-                      'Continuer',
-                      style: GoogleFonts.acme(
-                        fontSize: 20.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                    )))),  
-                    SizedBox(height: MediaQuery.sizeOf(context).height*0.030,),
-                    TextButton(onPressed: (){},
-                      child: Text(
-                        "Conditions générales d'utilisation",
-                        style: GoogleFonts.acme(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _nomprenom(),
+                      _vnomprenom(),
+                      SizedBox(height: MediaQuery.sizeOf(context).height*0.010,),
+                      _username(),
+                      _vusername(),
+                      SizedBox(height: MediaQuery.sizeOf(context).height*0.010,),
+                      _email(),
+                      _vemail(),
+                       SizedBox(height: MediaQuery.sizeOf(context).height*0.010,),
+                      _numero(),
+                      _vnumero(),
+                      SizedBox(height: MediaQuery.sizeOf(context).height*0.010,),
+                      _motdepasse(),
+                      _vmotdepasse(),
+                      // _connect()
+                    ],
+                  ),
+                  // if (isLoading) _spinner(),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: 180,
+                        decoration: BoxDecoration(
+                          // color: Colors.blue,
+                          border: Border.all(style: BorderStyle.solid, color: Colors.white),
+                          borderRadius: const BorderRadius.all(Radius.circular(0.1))
                         ),
-                      ),)
-                    
+                        child: TextButton(
+                          onPressed: isLoading ? null : () => enregistrerUtilisateur(),
+                          child: Text(
+                          'Continuer',
+                          style: GoogleFonts.acme(
+                            fontSize: 20.0,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                        )))),  
+                        SizedBox(height: MediaQuery.sizeOf(context).height*0.030,),
+                        TextButton(onPressed: (){
+                           _showConditionsDialog(context);
+                        },
+                          child: Text(
+                            "Conditions générales d'utilisation",
+                            style: GoogleFonts.acme(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),)
+                        
+                    ],
+                  )   
                 ],
-              )   
-            ],
+              ),
+            ),
           ),
-        ),
+          if (isLoading)
+          Positioned(
+            child: _spinner(),
+          ),
+        ],
       ),
+    );
+  }
+
+  void _showConditionsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Conditions Générales d\'Utilisation'),
+          content: const SingleChildScrollView(
+            child: Text(
+              '''
+              Date d'entrée en vigueur : 1er janvier 2024
+              Bienvenue sur OCEAN, une plateforme qui vous connecte aux prestataires de services locaux disponibles 24h/24, 7j/7. Avant d'utiliser notre service, veuillez lire attentivement les conditions générales d'utilisation suivantes.
+
+              1. Acceptation des Conditions
+              En utilisant notre application, vous acceptez de vous conformer à ces conditions générales. Si vous n'êtes pas d'accord avec ces conditions, veuillez ne pas utiliser l'application.
+
+              2. Description du Service
+              Notre plate-forme constitue un vaste réseau de prestataires de services. Elle permet à nos utilisateurs de rentrer en contact avec les prestataires disponibles et les plus proches de leur lieu d'emplacement. Les prestataires sont classés par catégorie, les utilisateurs peuvent par contre effectuer une recherche avec des mots clés comme "soudeur", "plombier" ou encore "livreur". Les utilisateurs peuvent laisser des avis sur les prestataires et leur noter également. Le service est gratuit et disponible 24h sur 24, 7 jours sur 7.
+
+              3. Inscription et Comptes
+              Pour utiliser pleinement notre service, vous devez vous inscrire et créer un compte. Vous devez fournir des informations exactes et complètes lors de l'inscription.
+
+              4. Règles d'Utilisation
+              - Vous acceptez de ne pas utiliser l'application à des fins illégales, frauduleuses ou nuisibles.
+              - Vous ne pouvez pas publier de contenu offensant, diffamatoire ou inapproprié.
+              - Vous êtes responsable de maintenir la sécurité de votre compte.
+
+              5. Contenu Généré par l'Utilisateur
+              Les commentaires, évaluations et autres contenus générés par les utilisateurs peuvent être modérés. Nous nous réservons le droit de supprimer tout contenu.
+              ''',
+              style: TextStyle(fontSize: 14),
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              child: Text('Fermer'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _spinner() {
+    return const SpinKitFadingCircle(
+      color: Colors.blueAccent,
+      duration: Duration(milliseconds: 1200),
+      size: 100.0,
     );
   }
 

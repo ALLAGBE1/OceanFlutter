@@ -5,13 +5,18 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:ocean/Card/cardPrestatairesAverage.dart';
+import 'package:ocean/authentification/connexion.dart';
+import 'package:ocean/authentification/user_data.dart';
 import 'package:ocean/modeles/modelePrestataire.dart';
 import 'package:ocean/pages/carte_page_map.dart';
 import 'package:ocean/pages/resultatRecherche.dart';
+import 'package:ocean/pages/searchePage.dart';
 
 
 class Metier {
@@ -30,16 +35,39 @@ class Prestataire {
   final String? downloadUrl;
   final bool prestataire;
   final String username;
+  final String photoProfil;
   final int distance;
   final String domaineactivite;
   final Map<String, dynamic> location;
   // final int rating; // Nouvelle propriété pour stocker la notation du prestataire
 
 
-  Prestataire(this.id, this.nomprenom, this.email, this.downloadUrl, this.prestataire, this.username, this.location, this.domaineactivite, this.distance, this.nomcommercial, this.numero,
+  Prestataire(this.id, this.nomprenom, this.email, this.downloadUrl, this.prestataire, this.username, this.location, this.domaineactivite, this.distance, this.nomcommercial, this.numero, this.photoProfil,
   //  this.rating
   );
 }
+
+class PrestatairesAverage {
+  final String id;
+  final double averageRating;
+  final Map<String, dynamic> prestataire_info; // Champ 'prestataire' est de type Map<String, dynamic>
+
+  PrestatairesAverage(this.id, this.averageRating, this.prestataire_info);
+  
+  // String get nomprenom => prestataire['nomprenom']; // Accès à nomprenom à l'intérieur de l'objet author
+  String get nomprenom => prestataire_info['nomprenom']; // Accès à nomprenom à l'intérieur de l'objet author
+  int get numero => prestataire_info['numero']; // Accès à nomprenom à l'intérieur de l'objet author
+  String get username => prestataire_info['username']; // Accès à nomprenom à l'intérieur de l'objet author
+  String get email => prestataire_info['email']; // Accès à nomprenom à l'intérieur de l'objet author
+  // int get distance => prestataire_info['distance']; // Accès à nomprenom à l'intérieur de l'objet author
+  String get domaineactivite => prestataire_info['domaineactivite']; // Accès à nomprenom à l'intérieur de l'objet author
+  String get photoProfil=> prestataire_info['photoProfil']; // Accès à nomprenom à l'intérieur de l'objet author
+  bool get prestataire => prestataire_info['prestataire']; // Accès à nomprenom à l'intérieur de l'objet author
+  String get nomcommercial => prestataire_info['nomcommercial']; // Accès à nomprenom à l'intérieur de l'objet author
+  Map<String, dynamic> get location => prestataire_info['location']; // Accès à nomprenom à l'intérieur de l'objet author
+
+}
+
 
 
 class Publicites {
@@ -49,7 +77,8 @@ class Publicites {
   Publicites(this.id, this.imagepublier);
 }
 
-enum SelectedItem { None, Electricien, Garagiste, Plombier, Mecanicien, SomeOtherItem }
+enum SelectedItem { None, Electricien, Garagiste, Plombier, Mecanicien, Menuiserie, Jardinage, Rparationlectronique, 
+ Dmnagement, Informatique, Serrurerie, FroidetClimatisation, Carrelage, Tlphoneetordinateur, Freelance, Livreur, Autres, SomeOtherItem }
 
 class Accueil extends StatefulWidget {
   const Accueil({super.key});
@@ -59,9 +88,13 @@ class Accueil extends StatefulWidget {
 }
 
 class _AccueilState extends State<Accueil> {
+  TextEditingController searchTermController = TextEditingController();
+  
   SelectedItem _selectedItem = SelectedItem.None; // Initial state
   bool isLoading = true;
   List<Prestataire> prestataires = [];
+  List<PrestatairesAverage> prestatairesAverages = [];
+  // List<PrestataireRechercher> prestatairesRechercher = [];
   late Future<List<Publicites>> publicitesFuture; // Déclaration de la variable
 
   int selectedElementIndex = -1; // Initialisez avec une valeur qui n'existe pas
@@ -70,23 +103,190 @@ class _AccueilState extends State<Accueil> {
   List<Metier> metiers = [];
   // bool isLoading = true;
 
+//     Future<List<PrestatairesAverage>> fetchPrestatairesAverage() async {
+//     setState(() {
+//       isLoading = true; // Afficher le chargement
+//     });
+
+//     final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/rating/ratings/superieur/egale/quatre'));
+
+//     if (response.statusCode == 200) {
+//       final data = jsonDecode(response.body) as List<dynamic>;
+//       print("ouais tttttttttttttttttttttttttttttttttttt, ${data}");
+//       final fetchedPrestatairesAverage = data
+//         .map((item) => PrestatairesAverage(
+//               item['_id'] as String,
+//               // item['averageRating'] as double,
+//               (item['averageRating'] as num).toDouble(), // Convertir en double
+//               item['prestataire_info'] as Map<String, dynamic>
+              
+//             ))
+//         .toList();
+
+
+//       setState(() {
+//         isLoading = false; // Cacher le chargement
+//         prestatairesAverages = fetchedPrestatairesAverage;
+//         // print("ouaissssssssssss, ${commentaires}");
+//       });
+
+//       return fetchedPrestatairesAverage;
+//   } else {
+//     throw Exception('Failed to fetch data from MongoDB');
+//   }
+// } 
+
+  Future<List<PrestatairesAverage>> fetchPrestatairesAverage() async {
+  setState(() {
+    isLoading = true; // Afficher le chargement
+  });
+
+  try {
+    final position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+
+    final apiUrl = 'https://ocean-52xt.onrender.com/rating/ratings/superieur/egale/quatre';
+    final response = await http.get(Uri.parse(apiUrl));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body) as List<dynamic>;
+      final fetchedPrestatairesAverage = data
+          .map((item) => PrestatairesAverage(
+                item['_id'] as String,
+                (item['averageRating'] as num).toDouble(),
+                item['prestataire_info'] as Map<String, dynamic>,
+              ))
+          .toList();
+
+      setState(() {
+        isLoading = false; // Cacher le chargement
+        prestatairesAverages = fetchedPrestatairesAverage;
+      });
+
+      return fetchedPrestatairesAverage;
+    } else {
+      print('Erreur lors de la récupération des données');
+      throw Exception('Erreur lors de la récupération des données');
+    }
+  } catch (error) {
+    print('Erreur lors de la requête HTTP : $error');
+
+    // Renvoyer une liste vide en cas d'erreur
+    return [];
+  }
+}
+
+
+// Future<List<PrestatairesAverage>> fetchPrestatairesAverage() async {
+//   setState(() {
+//     isLoading = true; // Afficher le chargement
+//   });
+
+//   try {
+//     final position = await Geolocator.getCurrentPosition(
+//       desiredAccuracy: LocationAccuracy.high,
+//     );
+
+//     final apiUrl = 'https://ocean-52xt.onrender.com/rating/ratings/superieur/egale/quatre';
+//     final response = await http.get(Uri.parse(apiUrl));
+
+//     if (response.statusCode == 200) {
+//       final data = jsonDecode(response.body) as List<dynamic>;
+//       final fetchedPrestatairesAverage = data
+//           .map((item) => PrestatairesAverage(
+//                 item['_id'] as String,
+//                 (item['averageRating'] as num).toDouble(),
+//                 item['prestataire_info'] as Map<String, dynamic>,
+//               ))
+//           .toList();
+
+//       setState(() {
+//         isLoading = false; // Cacher le chargement
+//         prestatairesAverages = fetchedPrestatairesAverage;
+//       });
+
+//       return fetchedPrestatairesAverage;
+//     } else {
+//       print('Erreur lors de la récupération des données');
+//       throw Exception('Erreur lors de la récupération des données');
+//     }
+//   } catch (error) {
+//     print('Erreur lors de la requête HTTP : $error');
+//     throw Exception('Erreur lors de la requête HTTP : $error');
+//   }
+// }
+
+
+// Future<List<PrestatairesAverage>> fetchPrestatairesAverage() async {
+//     setState(() {
+//       isLoading = true; // Afficher le chargement
+//     });
+
+//     try {
+//       final position = await Geolocator.getCurrentPosition(
+//         desiredAccuracy: LocationAccuracy.high,
+//       );
+
+//       final apiUrl = 'https://ocean-52xt.onrender.com/rating/ratings/superieur/egale/quatre';
+//       // final apiUrl = 'https://ocean-52xt.onrender.com/rating/ratings/superieur/egale/quatre?lat=${position.latitude}&lng=${position.longitude}';
+//       print("Je veux voir l'url rechercher .......................... : ${apiUrl}");
+//       final response = await http.get(Uri.parse(apiUrl));
+
+//       if (response.statusCode == 200) {
+//         final data = jsonDecode(response.body) as List<dynamic>;
+//         print("Voici les résultats obtenus ::::::::::::::::::::::::::::::::::::::::::::::: ${data}");
+//         final fetchedPrestatairesAverage = data
+//           .map((item) => PrestatairesAverage(
+//               item['_id'] as String,
+//               (item['averageRating'] as num).toDouble(), // Convertir en double
+//               item['prestataire_info'] as Map<String, dynamic>
+//                 // item['_id'] as String,
+//                 // item['nomprenom'] as String,
+//                 // item['email'] as String,
+//                 // item['downloadUrl'] != null ? item['downloadUrl'] as String : "",
+//                 // item['prestataire'] as bool,
+//                 // item['username'] as String,
+//                 // item['location'] as Map<String, dynamic>,
+//                 // item['domaineactivite'] as String,
+//                 // // item['distance'] as int,
+//                 // item['distance'] != null ? item['distance'] as int : 0,
+//                 // item['nomcommercial'] as String,
+//                 // item['numero'] as int,
+//                 // item['rating'] as int,
+//               ))
+//           .toList();
+
+//         setState(() {
+//           isLoading = false; // Cacher le chargement
+//           prestatairesAverages = fetchedPrestatairesAverage;
+//         });
+
+//         return fetchedPrestatairesAverage;
+//       } else {
+//         print('Erreur lors de la récupération des données');
+//       }
+//     } catch (error) {
+//       print('Erreur lors de la requête HTTP : $error');
+//     }
+//   } 
+
   Future<List<Metier>> fetchData() async {
+  try {
     setState(() {
       isLoading = true; // Afficher le chargement
     });
 
-    final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/domaineActivite/'));
+    final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/domaineActivite'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as List<dynamic>;
       final fetchedmetiers = data
-        .map((item) => Metier(
-              item['_id'] as String,
-              item['domaineactivite'] as String,
-              
-            ))
-        .toList();
-
+          .map((item) => Metier(
+                item['_id'] as String,
+                item['domaineactivite'] as String,
+              ))
+          .toList();
 
       setState(() {
         isLoading = false; // Cacher le chargement
@@ -97,7 +297,45 @@ class _AccueilState extends State<Accueil> {
     } else {
       throw Exception('Failed to fetch data from MongoDB');
     }
+  } catch (error) {
+    print('Error fetching data: $error');
+    setState(() {
+      isLoading = false; // Cacher le chargement en cas d'erreur
+    });
+    return []; // Retourner une liste vide en cas d'erreur
   }
+}
+
+
+  // Future<List<Metier>> fetchData() async {
+  //   setState(() {
+  //     isLoading = true; // Afficher le chargement
+  //   });
+
+  //   final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/domaineActivite'));
+
+  //   if (response.statusCode == 200) {
+  //     final data = jsonDecode(response.body) as List<dynamic>;
+  //     final fetchedmetiers = data
+  //       .map((item) => Metier(
+  //             item['_id'] as String,
+  //             item['domaineactivite'] as String,
+              
+  //           ))
+  //       .toList();
+
+
+  //     setState(() {
+  //       isLoading = false; // Cacher le chargement
+  //       metiers = fetchedmetiers;
+  //     });
+
+  //     return fetchedmetiers;
+  //   } else {
+  //     throw Exception('Failed to fetch data from MongoDB');
+  //   }
+  // }
+
 
   // ::::::::::
 
@@ -131,6 +369,7 @@ class _AccueilState extends State<Accueil> {
                 item['distance'] as int,
                 item['nomcommercial'] as String,
                 item['numero'] as int,
+                item['photoProfil'] as String,
                 // item['rating'] as int,
               ))
           .toList();
@@ -186,6 +425,8 @@ class _AccueilState extends State<Accueil> {
     selectedElementIndex = -1; // Initialisez-le avec la première valeur d'index ou toute autre valeur appropriée
     _selectedItem = SelectedItem.None; // Initialisez avec la valeur par défaut
     publicitesFuture = fetchPublicites();
+    fetchData();
+    fetchPrestatairesAverage();
     fetchData().then((fetchedmetiers) {
       setState(() {
         metiers = fetchedmetiers;
@@ -278,26 +519,28 @@ class _AccueilState extends State<Accueil> {
           // const Text("Nous vous offrons simplement et rapidement des préstataire dans votre zone", style: TextStyle(fontSize: 20),),
           // const SizedBox(height: 50,),
           // const Text("Océan vous offre différents types de prestataires, tels que des électriciens, des garagistes, des plombiers, des mécaniciens, des coiffeurs et des coiffeuses...", style: TextStyle(fontSize: 20),),
-          const SizedBox(child: Text("Recommandations")),
-          const SizedBox(height: 20,),
+          const SizedBox(child: Text("Recommandations", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),)),
+          // const SizedBox(height: 20,),
           Expanded(
-            child: GridView.count(
-              crossAxisCount: 2,
-              children: List.generate(100, (index) {
-                return Center(
-                  child: Container(
-                    decoration: const BoxDecoration(color: Colors.grey),
-                    child: Padding(
-                      padding: const EdgeInsets.all(52.0),
-                      child: Text(
-                        'Item $index',
-                        // style: Theme.of(context).textTheme.headline5,
-                      ),
-                    ),
-                  ),
-                );
-              }),
-            ),
+            child: _alternateContent1(),
+            // child: Center(child: Text("Il n'y a pas de prestataire à vous recommander pour le moment. On vous conseil de faire la recherche de votre prestataire.", textAlign: TextAlign.center, style: TextStyle(fontSize: 18),)),
+            // child: GridView.count(
+            //   crossAxisCount: 2,
+            //   children: List.generate(100, (index) {
+            //     return Center(
+            //       child: Container(
+            //         decoration: const BoxDecoration(color: Colors.grey),
+            //         child: Padding(
+            //           padding: const EdgeInsets.all(52.0),
+            //           child: Text(
+            //             'Item $index',
+            //             // style: Theme.of(context).textTheme.headline5,
+            //           ),
+            //         ),
+            //       ),
+            //     );
+            //   }),
+            // ),
           ),
         ],
       ),
@@ -350,6 +593,229 @@ class _AccueilState extends State<Accueil> {
     );
   }
 
+  Widget _alternateContent1() {
+      return isLoading ? const Text("En cors de chargement..."):
+        prestatairesAverages.isEmpty 
+          ? const Center(child: Text("Il n'y a pas de prestataire à vous recommander pour le moment. On vous conseil de faire la recherche de votre prestataire.", textAlign: TextAlign.center, style: TextStyle(fontSize: 18),)) 
+        : Column(
+          children: [
+            const Center(
+              child: Text(
+                " ",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: prestatairesAverages.length,
+                itemBuilder: (context, index) {
+                  final prestataire = prestatairesAverages[index];
+                  return Column(
+                    children: [
+                      const Divider(height: 8,),
+                      InkWell(
+                        onTap: () {
+                          // Gérer ce que vous voulez faire lorsque l'utilisateur clique sur un prestataire
+
+                          print("Bonjour");
+                          if(UserData.token.isEmpty) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Info'),
+                                  content: const Text("Veuillez-vous connecter pour avoir accès !"),
+                                  actions: [
+                                    TextButton(
+                                      child: const Text('Connexion'),
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) => const Connexion())
+                                          // MaterialPageRoute(builder: (context) => CompteClient(documentFourni: documentFourni))
+                                        );
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: const Text('OK'),
+                                      onPressed: () {
+                                        Navigator.pop(context, true);
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ModelePrestataire(nomprenom: prestataire.nomprenom, email: prestataire.email, prestataire: prestataire.prestataire, 
+                                  id: prestataire.id, domaineactivite: prestataire.domaineactivite, nomcommercial: prestataire.nomcommercial, latitude: prestataire.location['coordinates'][1], 
+                                  longitude: prestataire.location['coordinates'][0], numero: prestataire.numero, photoProfil: prestataire.photoProfil,),
+                              ),
+                            );
+                            
+                          }
+                        },
+                        child: Container(
+                          height: 100,
+                          margin: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.grey,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(4),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(right: 15),
+                                child: Container(
+                                  height: 100,
+                                  width: MediaQuery.of(context).size.width * 0.350,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    // color: color, 
+                                  ),
+                                  child: CachedNetworkImage(
+                                    imageUrl: prestataire.photoProfil ?? '',
+                                    placeholder: (context, url) => const CircularProgressIndicator(),
+                                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                                    height: 100,
+                                    width: MediaQuery.of(context).size.width * 0.350,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 15),
+                                  child: Column(
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Expanded(child: Text(prestataire.nomprenom)),
+                                              const Expanded(child: Text("")),
+                                              Expanded(child: Text("${prestataire.domaineactivite}")),
+
+                                              // Expanded(
+                                              //   child: ElevatedButton(
+                                              //     onPressed: () {
+                                              //       // Naviguer vers la page de la carte en passant les coordonnées du prestataire
+                                              //       final coordinates = prestataire.location['coordinates'];
+                                              //       final latitude = coordinates[1]; // Latitude
+                                              //       final longitude = coordinates[0]; // Longitude
+                                              
+                                              //       Navigator.of(context).push(
+                                              //         MaterialPageRoute(
+                                              //           builder: (context) => CartePageMap(
+                                              //             latitude: latitude,
+                                              //             longitude: longitude,
+                                              //           ),
+                                              //         ),
+                                              //       );
+                                              //     },
+                                              //     child: const Icon(Icons.map),
+                                              //   ),
+                                              // )
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                      Column(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: Row(
+                                                  children: [
+                                                    // const Icon(Icons.location_on_outlined),
+                                                    // const SizedBox(width: 3,),
+                                                    Text(prestataire.username)
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: Row(
+                                                  children: [
+                                                    // const Icon(Icons.contact_phone_outlined),
+                                                    // const SizedBox(width: 3,),
+                                                    // Text("0585649579")
+                                                    Text("${prestataire.nomcommercial}"), 
+                                                  ],
+                                                ),
+                                              ),
+                                              const Expanded(
+                                                child: Row(
+                                                  children: [
+                                                    Icon(Icons.directions_walk),
+                                                    SizedBox(width: 3,),
+                                                    // Text("${prestataire.distance} m")
+                                                    // Text("data"),
+                                                    SizedBox(width: 3,),
+                                                    Icon(Icons.location_on_outlined),
+
+                                                  ],
+                                                ),
+                                              )
+                                              
+                                            ],
+                                          ),
+                                          // _ratingBar()
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      const Divider(height: 8,),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ],
+      );
+}
+
+    //   Widget _widgetImage(imageUrl) {
+    // Color color = const Color(0xFFD9D9D9);
+    // return Padding(
+    //   padding: const EdgeInsets.only(right: 15),
+    //   child: Container(
+    //     height: 100,
+    //     width: MediaQuery.of(context).size.width * 0.350,
+    //     decoration: BoxDecoration(
+    //       borderRadius: BorderRadius.circular(12),
+    //       color: color, 
+    //     ),
+    //     child: CachedNetworkImage(
+    //       imageUrl: imageUrl ?? '',
+    //       placeholder: (context, url) => const CircularProgressIndicator(),
+    //       errorWidget: (context, url, error) => const Icon(Icons.error),
+    //       height: 100,
+    //       width: MediaQuery.of(context).size.width * 0.350,
+    //       fit: BoxFit.cover,
+    //     ),
+    //   ),
+    // );
+    // }
+
+
+  
+
+
     Widget _alternateContent() {
       if (selectedElementIndex < 0 || selectedElementIndex >= metiers.length) {
         // Si selectedElementIndex est en dehors de la plage valide, affichez un message d'erreur.
@@ -385,14 +851,46 @@ class _AccueilState extends State<Accueil> {
                           // Gérer ce que vous voulez faire lorsque l'utilisateur clique sur un prestataire
 
                           print("Bonjour");
-                          Navigator.push(
+                          if(UserData.token.isEmpty) {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Info'),
+                                  content: const Text("Veuillez-vous connecter pour avoir accès !"),
+                                  actions: [
+                                    TextButton(
+                                      child: const Text('Connexion'),
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) => const Connexion())
+                                          // MaterialPageRoute(builder: (context) => CompteClient(documentFourni: documentFourni))
+                                        );
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: const Text('OK'),
+                                      onPressed: () {
+                                        Navigator.pop(context, true);
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          } else {
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ModelePrestataire(nomprenom: prestataire.nomprenom, email: prestataire.email, prestataire: prestataire.prestataire, 
                                   id: prestataire.id, domaineactivite: prestataire.domaineactivite, nomcommercial: prestataire.nomcommercial, latitude: prestataire.location['coordinates'][1], 
-                                  longitude: prestataire.location['coordinates'][0], numero: prestataire.numero,),
+                                  longitude: prestataire.location['coordinates'][0], numero: prestataire.numero, photoProfil: prestataire.photoProfil,),
                               ),
-                          );
+                            );
+                            
+                          }
+                          
                         },
                         child: Container(
                           height: 100,
@@ -405,9 +903,28 @@ class _AccueilState extends State<Accueil> {
                           ),
                           child: Row(
                             children: [
-                              const Padding(
-                                padding: EdgeInsets.all(20.0),
-                                child: Icon(Icons.person_2),
+                              // const Padding(
+                              //   padding: EdgeInsets.all(20.0),
+                              //   child: Icon(Icons.person_2),
+                              // ),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 15),
+                                child: Container(
+                                  height: 100,
+                                  width: MediaQuery.of(context).size.width * 0.350,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    // color: color, 
+                                  ),
+                                  child: CachedNetworkImage(
+                                    imageUrl: prestataire.photoProfil ?? '',
+                                    placeholder: (context, url) => const CircularProgressIndicator(),
+                                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                                    height: 100,
+                                    width: MediaQuery.of(context).size.width * 0.350,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
                               ),
                               Expanded(
                                 child: Column(
@@ -448,8 +965,8 @@ class _AccueilState extends State<Accueil> {
                                             Expanded(
                                               child: Row(
                                                 children: [
-                                                  const Icon(Icons.location_on_outlined),
-                                                  const SizedBox(width: 3,),
+                                                  // const Icon(Icons.location_on_outlined),
+                                                  // const SizedBox(width: 3,),
                                                   Text(prestataire.username)
                                                 ],
                                               ),
@@ -461,10 +978,11 @@ class _AccueilState extends State<Accueil> {
                                             Expanded(
                                               child: Row(
                                                 children: [
-                                                  const Icon(Icons.contact_phone_outlined),
-                                                  const SizedBox(width: 3,),
+                                                  // const Icon(Icons.contact_phone_outlined),
+                                                  // const SizedBox(width: 3,),
                                                   // Text("0585649579")
-                                                  Text("${prestataire.numero.toString()}"), 
+                                                  Text("${prestataire.nomcommercial}"), 
+                                                  // Text("${prestataire.numero.toString()}"), 
                                                 ],
                                               ),
                                             ),
@@ -473,7 +991,9 @@ class _AccueilState extends State<Accueil> {
                                                 children: [
                                                   const Icon(Icons.directions_walk),
                                                   const SizedBox(width: 3,),
-                                                  Text("${prestataire.distance} m")
+                                                  Text("${prestataire.distance} m"),
+                                                  const SizedBox(width: 3,),
+                                                  const Icon(Icons.location_on_outlined),
                                                 ],
                                               ),
                                             )
@@ -500,25 +1020,44 @@ class _AccueilState extends State<Accueil> {
       );
 }
 
+
+
+
+// https://ocean-52xt.onrender.com/users/prestatairesNom/Tob
+
+
+
   Widget _vsearch() {
-    String searchTerm = ''; // Le terme de recherche saisi par l'utilisateur
+    // late searchTerm; // Le terme de recherche saisi par l'utilisateur
 
     return Container(
       margin: const EdgeInsets.all(15),
       child: CupertinoTextField(
+        controller: searchTermController,
         padding: const EdgeInsets.all(13),
-        prefix: const Padding(
-          padding: EdgeInsets.only(left: 15.0),
-          child: Icon(Icons.search),
+        prefix: Padding(
+          padding: const EdgeInsets.only(left: 15.0),
+          child: InkWell(
+            onTap: () {
+              String enteredText = searchTermController.text;
+              print("Valeur entrée par l'utilisateur : $enteredText");
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SeachePage(searchTerm: "$enteredText",))
+              );
+          },
+            child: const Icon(Icons.search),
+          ),
         ),
         placeholder: "Rechercher un prestataire",
-        onChanged: (value) {
+        onChanged: (searchTerm) {
           // Mettez à jour le terme de recherche à mesure que l'utilisateur tape
           setState(() {
-            searchTerm = value;
+            searchTermController.text = searchTerm;
           });
         },
-        onSubmitted: (value) {
+        onSubmitted: (searchTerm) {
+          print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + searchTerm);
           // Effectuez la recherche lorsque l'utilisateur appuie sur "Rechercher" dans le clavier
           // _performSearch(context, searchTerm);
         },
@@ -531,16 +1070,18 @@ class _AccueilState extends State<Accueil> {
     );
   }
 
-  void _performSearch(BuildContext context, String searchTerm) {
-    // Effectuez la recherche ici en utilisant le terme de recherche (searchTerm)
-    // Appelez l'API avec le terme de recherche et affichez les résultats dans une autre interface utilisateur
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ResultatRecherche(),
-      ),
-    );
-  }
+  // void _performSearch(BuildContext context, String searchTerm) {
+  //   // Effectuez la recherche ici en utilisant le terme de recherche (searchTerm)
+  //   // Appelez l'API avec le terme de recherche et affichez les résultats dans une autre interface utilisateur
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => ResultatRecherche(),
+  //     ),
+  //   );
+  // }
+
+
 
 
 // Widget _vsearch() {

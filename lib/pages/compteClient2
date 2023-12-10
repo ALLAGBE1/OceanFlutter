@@ -13,7 +13,6 @@ import 'package:ocean/pages/miseajour.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:share_plus/share_plus.dart';
-import 'package:dio/dio.dart';
 
 
 class CompteClient extends StatefulWidget {
@@ -27,6 +26,9 @@ class CompteClient extends StatefulWidget {
 }
 
 class _CompteClientState extends State<CompteClient> {
+  // bool isPrestataire = true; // Utiliser une variable d'état locale
+  // bool isPrestataire = UserData.disponible; // Utiliser une variable d'état locale
+  // bool isPrestataire ? UserData.disponible : newState; // Utiliser une variable d'état locale
   bool isPrestataire = true; // Utiliser une variable d'état locale
   File? _image;
   final ImagePicker _picker = ImagePicker();
@@ -37,7 +39,10 @@ class _CompteClientState extends State<CompteClient> {
   @override
   void initState() {
     super.initState();
+    // isPrestataire = UserData.disponible;
     
+    // Appel de la fonction pour obtenir la photo de profil de l'utilisateur
+    // getProfilePhoto(UserData.id);
   }
 
   final MaterialStateProperty<Icon?> thumbIcon =
@@ -56,6 +61,8 @@ class _CompteClientState extends State<CompteClient> {
     setState(() {
       if (pickedImage != null) {
         _image = File(pickedImage.path);
+        // Appeler la fonction pour télécharger l'image ici
+        // postPhotoProfil();
         putPhotoProfil();
       }
     });
@@ -85,29 +92,46 @@ class _CompteClientState extends State<CompteClient> {
     }
   }
 
+//   Future<void> getProfilePhoto(String userId) async {
+//   try {
+//     final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/photoProfils/profilUser/${UserData.id}'));
+//     if (response.statusCode == 200) {
+//       List<dynamic> data = json.decode(response.body);
+//       if (data.isNotEmpty) {
+//         Map<String, dynamic> photoData = data.first;
+//         String photoUrl = photoData['photoProfil'];
+//         setState(() {
+//           _image = File(photoUrl);
+//         });
+//       } else {
+//         print('Aucune photo de profil trouvée pour l\'utilisateur');
+//       }
+//     } else {
+//       print('Erreur: ${response.reasonPhrase}');
+//     }
+//   } catch (error) {
+//     print('Erreur: $error');
+//   }
+// }
 
   Future<void> putPhotoProfil() async {
   if (_image != null) {
+    print('UserID: ${UserData.id}'); // Vérifier la valeur de l'ID de l'utilisateur
+    var headers = {
+      'Content-Type': 'application/json'
+    };
+    var request = http.MultipartRequest('PUT', Uri.parse('https://ocean-52xt.onrender.com/users/update/${UserData.id}', 
+      body: {'disponible': photoProfil.toString()},
+    ));
+   
+    request.files.add(await http.MultipartFile.fromPath('photoProfil', _image!.path));
+
     try {
-      print('UserID: ${UserData.id}');
-
-      Dio dio = Dio();
-      FormData formData = FormData.fromMap({
-        'photoProfil': await MultipartFile.fromFile(_image!.path),
-      });
-
-      Response response = await dio.put(
-        'https://ocean-52xt.onrender.com/users/updateImageProfile/${UserData.id}',
-        data: formData,
-        options: Options(
-          headers: {'Content-Type': 'multipart/form-data'},
-        ),
-      );
-
+      http.StreamedResponse response = await request.send();
       if (response.statusCode == 200) {
-        print(response.data);
+        print(await response.stream.bytesToString());
       } else {
-        print('Error: ${response.statusMessage}');
+        print('Error: ${response.reasonPhrase}');
       }
     } catch (error) {
       print('Error: $error');
@@ -117,51 +141,17 @@ class _CompteClientState extends State<CompteClient> {
   }
 }
 
-//   Future<void> putPhotoProfil() async {
+
+//   Future<void> postPhotoProfil() async {
 //   if (_image != null) {
 //     print('UserID: ${UserData.id}'); // Vérifier la valeur de l'ID de l'utilisateur
 //     var headers = {
 //       'Content-Type': 'application/json'
 //     };
-    
-//     // Utilisation de FormData pour envoyer à la fois l'image et d'autres données
-//     // var request = http.MultipartRequest('PUT', Uri.parse('https://ocean-52xt.onrender.com/users/updateImageProfile/${UserData.id}'));
-//     var request = http.MultipartRequest('PUT', Uri.parse('http://192.168.43.69:3000/users/updateImageProfile/${UserData.id}'));
-//     request.headers.addAll(headers);
-
-//     print('UserID: RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR'); // Vérifier la valeur de l'ID de l'utilisateur
-
-//     // Ajouter l'image
-//     request.files.add(await http.MultipartFile.fromPath('photoProfil', _image!.path));
-
-//     print('UserID: ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ'); // Vérifier la valeur de l'ID de l'utilisateur
-
-//     try {
-//       http.StreamedResponse response = await request.send();
-//       if (response.statusCode == 200) {
-//         print(await response.stream.bytesToString());
-//       } else {
-//         print('Error: ${response.reasonPhrase}');
-//       }
-//     } catch (error) {
-//       print('Error: $error');
-//     }
-//   } else {
-//     print('Image not selected');
-//   }
-// }
-
-
-//   Future<void> putPhotoProfil() async {
-//   if (_image != null) {
-//     print('UserID: ${UserData.id}'); // Vérifier la valeur de l'ID de l'utilisateur
-//     var headers = {
-//       'Content-Type': 'application/json'
-//     };
-//     var request = http.MultipartRequest('PUT', Uri.parse('https://ocean-52xt.onrender.com/users/update/${UserData.id}', 
-//       body: {'disponible': photoProfil.toString()},
-//     ));
-   
+//     var request = http.MultipartRequest('POST', Uri.parse('https://ocean-52xt.onrender.com/photoProfils'));
+//     request.fields.addAll({
+//       'userId': UserData.id
+//     });
 //     request.files.add(await http.MultipartFile.fromPath('photoProfil', _image!.path));
 
 //     try {
@@ -178,8 +168,6 @@ class _CompteClientState extends State<CompteClient> {
 //     print('Image not selected');
 //   }
 // }
-
-
 
 
   void handleLogout(BuildContext context) async {
@@ -294,6 +282,7 @@ Widget _profile() {
                     width: 100,
                     fit: BoxFit.cover,
                   )
+                // : (UserData.photoProfil != null && UserData.photoProfil.isNotEmpty)
                 : (UserData.photoProfil.isNotEmpty)
                     ? ClipOval(
                         child: Image.network(
@@ -468,6 +457,19 @@ Widget _profile() {
               });
             },
           ),
+          // Switch(
+          //   activeColor: Colors.green,
+          //   thumbIcon: thumbIcon,
+          //   // value: isDisponible,
+          //   value: UserData.disponible,
+          //   onChanged: (bool value) {
+          //     setState(() {
+          //       // isDisponible = value;
+          //       // updatePrestataireState(value);
+          //       UserData.disponible;
+          //     });
+          //   },
+          // ),
         ],
       ),
     );

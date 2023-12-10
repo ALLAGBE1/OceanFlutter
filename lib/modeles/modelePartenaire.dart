@@ -59,6 +59,8 @@ class _ModelePartenaireState extends State<ModelePartenaire> {
       }
     } catch (error) {
       print('Erreur lors de la requête HTTP : $error');
+      // Renvoyer une liste vide en cas d'erreur
+      // return [];
     }
   }
 

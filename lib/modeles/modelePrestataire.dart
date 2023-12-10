@@ -5,6 +5,7 @@ import 'dart:math';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -27,9 +28,19 @@ class Commentaire {
   String get nomprenom => author['nomprenom']; // Accès à nomprenom à l'intérieur de l'objet author
 }
 
+class Average {
+  // final String id;
+  final double average;
+  final Map<String, dynamic> prestataire; // Champ 'prestataire' est de type Map<String, dynamic>
+
+  Average(this.average, this.prestataire);
+  
+  // String get nomprenom => prestataire['nomprenom']; // Accès à nomprenom à l'intérieur de l'objet author
+}
+
 class Rating {
   final String id;
-  int rating;
+  final String rating;
   final Map<String, dynamic> author;
   final String prestataire;
   // final int rating; // Nouvelle propriété pour stocker la notation du prestataire
@@ -48,6 +59,7 @@ class ModelePrestataire extends StatefulWidget {
   final String email;
   final bool prestataire;
   final String domaineactivite;
+  final String photoProfil;
   final int numero;
   
   final String nomcommercial;
@@ -61,7 +73,7 @@ class ModelePrestataire extends StatefulWidget {
     required this.nomprenom,
     required this.email,
     required this.nomcommercial,
-    required this.prestataire, required this.domaineactivite, required this.longitude, required this.latitude, required this.numero, 
+    required this.prestataire, required this.domaineactivite, required this.longitude, required this.latitude, required this.numero, required this.photoProfil, 
     
   });
 
@@ -77,10 +89,23 @@ class _ModelePrestataireState extends State<ModelePrestataire> {
   late Future<List<Commentaire>> publicitesFuture;
 
   bool isLoading = true;
+  // double average = 0.0; // Ajoutez cette variable d'état
+
+  double? average; // Déclarez la variable au niveau de la classe State
 
   List<Commentaire> commentaires = [];
+  List<Average> averages = [];
 
   List<Rating> ratings = [];
+
+  // late String ratingId = " ";
+  late String ratingId;
+  late String ratingNumber;
+
+  _ModelePrestataireState() {
+    ratingId = ""; // Initialisez ratingId avec une valeur non-constante dans le constructeur
+    ratingNumber = "";
+  }
 
   TextEditingController usernameController = TextEditingController();
 
@@ -130,13 +155,244 @@ class _ModelePrestataireState extends State<ModelePrestataire> {
     }
   }
 
-  //Poster un rating
+  Future<List<Rating>> fetchRating() async {
+  setState(() {
+    isLoading = true; // Afficher le chargement
+  });
+
+  final String apiUrl = 'https://ocean-52xt.onrender.com/rating/ratings/${widget.id}?author=${UserData.id}';
+  final Map<String, String> headers = {
+    'Authorization':
+        'Bearer ${UserData.token}',
+  };
+
+  try {
+    final response = await http.get(Uri.parse(apiUrl), headers: headers);
+
+    if (response.statusCode == 200) {
+      final dataRating = jsonDecode(response.body) as List<dynamic>;
+      print("ouais ratingggggggggggggggggggggggggggggggggggggg, ${dataRating}");
+
+      if (dataRating.isNotEmpty) {
+        ratingNumber = dataRating[0]['rating'];
+        _rating = double.parse(ratingNumber);
+      } else {
+        _rating = 0.0;
+      }
+
+      final fetchedRating = dataRating
+          .map((item) => Rating(
+                item['_id'] as String,
+                item['author'] as Map<String, dynamic>,
+                item['prestataire'] as String,
+                item['rating'] as String,
+              ))
+          .toList();
+
+      setState(() {
+        isLoading = false; // Cacher le chargement
+        ratings = fetchedRating;
+      });
+
+      return fetchedRating;
+    } else {
+      // Gérer le cas d'erreur ici
+      throw Exception('Failed to fetch data from MongoDB');
+    }
+  } catch (error) {
+    // Gérer les erreurs liées à la requête ici
+    print('Error: $error');
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Erreur'),
+          content: const Text('Une erreur est survenue lors de la connexion au serveur.'),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    // Renvoyer une liste vide en cas d'erreur
+    return [];
+  }
+}
+
+
+//     Future<List<Rating>> fetchRating() async {
+//     setState(() {
+//       isLoading = true; // Afficher le chargement
+//     });
+
+//     final String apiUrl = 'https://ocean-52xt.onrender.com/rating/ratings/${widget.id}?author=${UserData.id}';
+//     final Map<String, String> headers = {
+//       'Authorization':
+//           'Bearer ${UserData.token}',
+//     };
+
+//     final response = await http.get(Uri.parse(apiUrl), headers: headers);
+
+//     // final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/rating/ratings/${widget.id}?author=${UserData.id}'));
+//     // final response = await http.get(Uri.parse('http://ocean-52xt.onrender.com/rating/ratings/${widget.id}?author=${UserData.id}'));
+
+//     if (response.statusCode == 200) {
+//       // final dataRating = json.decode(response.body);
+//       final dataRating = jsonDecode(response.body) as List<dynamic>;
+//       print("ouais ratingggggggggggggggggggggggggggggggggggggg, ${dataRating}");
+//       for (var datr in dataRating) {
+//         ratingId = datr['_id'];
+//         print("ratingId, ${ratingId}");
+//       }
+//       for (var datr1 in dataRating) {
+//         ratingNumber = datr1['rating'];
+//         print("rating, ${ratingNumber}");
+//       }
+//       if (dataRating.isNotEmpty) {
+//         // Utilisez le rating récupéré
+//         ratingNumber = dataRating[0]['rating'];
+//         _rating = double.parse(ratingNumber);
+//       } else {
+//         // Si aucun rating n'est disponible, initialisez _rating à 0.0
+//         _rating = 0.0;
+//       }
+//       // if (dataRating.isNotEmpty) {
+//       //   ratingId = dataRating[0]['_id'];
+//       //   print("Rating ID récupéré : $ratingId");
+//       // }
+//       final fetchedRating = dataRating
+//         // .whereType<Map<String, dynamic>>() // Filtrer les éléments qui ne sont pas des Map<String, dynamic>
+//         .map((item) => Rating(
+//               item['_id'] as String,
+//               item['author'] as Map<String, dynamic>,
+//               item['prestataire'] as String,
+//               item['rating'] as String,
+              
+//             ))
+//         .toList();
+
+
+//       setState(() {
+//         isLoading = false; // Cacher le chargement
+//         ratings = fetchedRating;
+//         // print("ouaissssssssssss, ${commentaires}");
+//         // _rating = fetchedRating.isNotEmpty ? data[1] : 0.0;
+//       });
+
+//       return fetchedRating;
+//   } else {
+//     // throw Exception('Failed to fetch data from MongoDB');
+//     showDialog(
+//           context: context,
+//           builder: (BuildContext context) {
+//             return AlertDialog(
+//               title: const Text('Erreur'),
+//               // content: Text('Une erreur est survenue lors de la connexion.'),
+//               content: const Text('Une erreur est survenue lors de la connexion au serveur.'),
+//               // content: const Text('Une erreur est survenue lors de la connexion.'),
+//               actions: [
+//                 TextButton(
+//                   child: const Text('OK'),
+//                   onPressed: () {
+//                     Navigator.of(context).pop();
+//                   },
+//                 ),
+//               ],
+//             );
+//           },
+//         );
+//   }
+// }
+
+
+//   Future<List<Rating>> postRating() async {
+//   setState(() {
+//     isLoading = true; // Afficher le chargement
+//   });
+
+//   double username = _rating;
+//   var headers = {
+//     'Content-Type': 'application/json'
+//   };
+
+//   try {
+//     var request = http.Request('POST', Uri.parse('https://ocean-52xt.onrender.com/rating'));
+//     request.body = json.encode({
+//       "rating": username,
+//       "author": UserData.id,
+//       "prestataire": widget.id
+//     });
+//     request.headers.addAll(headers);
+
+//     http.StreamedResponse response = await request.send();
+
+//     if (response.statusCode == 200) {
+//       var jsonString = await response.stream.bytesToString();
+//       print(jsonString);
+
+//       // Mise à jour de l'état (ajoutez votre logique si nécessaire)
+//       setState(() {
+//         ratings.add(Rating(
+//           // Ajoutez les données nécessaires pour créer un nouvel objet Rating
+          
+//         ));
+//       });
+
+//       return ratings;
+//     } else {
+//       // Gérez les erreurs ici, vous pouvez renvoyer une liste vide ou lancer une exception selon le cas
+//       print('Erreur lors de la création du rating');
+//       throw Exception('Erreur lors de la création du rating');
+//     }
+//   } catch (error) {
+//     // Gérer les erreurs liées à la requête ici
+//     print('Erreur lors de la requête HTTP : $error');
+//     showDialog(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return AlertDialog(
+//           title: const Text('Erreur'),
+//           content: const Text('Une erreur est survenue lors de la connexion au serveur.'),
+//           actions: [
+//             TextButton(
+//               child: const Text('OK'),
+//               onPressed: () {
+//                 Navigator.of(context).pop();
+//               },
+//             ),
+//           ],
+//         );
+//       },
+//     );
+
+//     // Renvoyer une liste vide en cas d'erreur
+//     return [];
+//   } finally {
+//     // Masquer le chargement après la requête, même en cas d'erreur
+//     if (mounted) {
+//       setState(() {
+//         isLoading = false;
+//       });
+//     }
+//   }
+// }
+
+    
+
+
+  // Poster un rating
   Future<List<Rating>> postRating() async {
     double username = _rating;
     var headers = {
       'Content-Type': 'application/json'
     };
-    var request = http.Request('POST', Uri.parse('http://192.168.43.166:3000/ratings'));
+    var request = http.Request('POST', Uri.parse('https://ocean-52xt.onrender.com/rating'));
     request.body = json.encode({
       "rating": username,
       "author": UserData.id,
@@ -153,7 +409,8 @@ class _ModelePrestataireState extends State<ModelePrestataire> {
       return ratings;
     } else {
       // Gérez les erreurs ici, vous pouvez renvoyer une liste vide ou lancer une exception selon le cas
-      throw Exception('Erreur lors de la création du rating');
+      // throw Exception('Erreur lors de la création du rating');
+      return [];
     }
   }
 
@@ -163,7 +420,10 @@ class _ModelePrestataireState extends State<ModelePrestataire> {
     var headers = {
       'Content-Type': 'application/json'
     };
-    var request = http.Request('PUT', Uri.parse('http://192.168.43.166:3000/ratings'));
+    // var urlRating = "http://192.168.137.1:3000/rating/$ratingId"; 
+    var urlRating = "https://ocean-52xt.onrender.com/rating/$ratingId"; 
+    print(urlRating);
+    var request = http.Request('PUT', Uri.parse(urlRating));
     request.body = json.encode({
       "rating": username,
       // "author": UserData.id,
@@ -184,74 +444,238 @@ class _ModelePrestataireState extends State<ModelePrestataire> {
     }
   }
 
-
   Future<List<Commentaire>> fetchData() async {
-    setState(() {
-      isLoading = true; // Afficher le chargement
-    });
+  setState(() {
+    isLoading = true; // Afficher le chargement
+  });
 
-    // final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/comments'));
-    final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/comments/commentaires/${widget.id}'));
+  final String apiUrl = 'https://ocean-52xt.onrender.com/comments/commentaires/${widget.id}';
+  final Map<String, String> headers = {
+    'Authorization': 'Bearer ${UserData.token}',
+  };
+
+  try {
+    final response = await http.get(Uri.parse(apiUrl), headers: headers);
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as List<dynamic>;
       print("ouais tttttttttttttttttttttttttttttttttttt, ${data}");
       final fetchedCommentaires = data
-        .map((item) => Commentaire(
-              item['_id'] as String,
-              item['comment'] as String,
-              item['author'] as Map<String, dynamic>,
-              
-            ))
-        .toList();
-
+          .map((item) => Commentaire(
+                item['_id'] as String,
+                item['comment'] as String,
+                item['author'] as Map<String, dynamic>,
+              ))
+          .toList();
 
       setState(() {
         isLoading = false; // Cacher le chargement
         commentaires = fetchedCommentaires;
-        // print("ouaissssssssssss, ${commentaires}");
       });
 
       return fetchedCommentaires;
-  } else {
-    throw Exception('Failed to fetch data from MongoDB');
-  }
-} 
+    } else {
+      // Gérer le cas d'erreur ici
+      throw Exception('Failed to fetch data from MongoDB');
+    }
+  } catch (error) {
+    // Gérer les erreurs liées à la requête ici
+    // print('Error: $error');
+    // showDialog(
+    //   context: context,
+    //   builder: (BuildContext context) {
+    //     return AlertDialog(
+    //       title: const Text('Erreur'),
+    //       content: const Text('Une erreur est survenue lors de la connexion au serveur.'),
+    //       actions: [
+    //         TextButton(
+    //           child: const Text('OK'),
+    //           onPressed: () {
+    //             Navigator.of(context).pop();
+    //           },
+    //         ),
+    //       ],
+    //     );
+    //   },
+    // );
 
-  Future<List<Rating>> fetchRating() async {
-    setState(() {
-      isLoading = true; // Afficher le chargement
-    });
-
-    // final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/comments'));
-    final response = await http.get(Uri.parse('http://192.168.43.166:3000/ratings/ratings/${widget.id}'));
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body) as List<dynamic>;
-      print("ouais ratingggggggggggggggggggggggggggggggggggggg, ${data}");
-      final fetchedRating = data
-        .map((item) => Rating(
-              item['_id'] as String,
-              item['author'] as Map<String, dynamic>,
-              item['prestataire'] as String,
-              item['rating'] as int,
-              
-            ))
-        .toList();
-
-
-      setState(() {
-        isLoading = false; // Cacher le chargement
-        ratings = fetchedRating;
-        // print("ouaissssssssssss, ${commentaires}");
-        // _rating = fetchedRating.isNotEmpty ? data[1] : 0.0;
-      });
-
-      return fetchedRating;
-  } else {
-    throw Exception('Failed to fetch data from MongoDB');
+    // Renvoyer une liste vide en cas d'erreur
+    return [];
   }
 }
+
+
+//   Future<List<Commentaire>> fetchData() async {
+//     setState(() {
+//       isLoading = true; // Afficher le chargement
+//     });
+
+//     final String apiUrl = 'https://ocean-52xt.onrender.com/comments/commentaires/${widget.id}';
+//     final Map<String, String> headers = {
+//       'Authorization':
+//           'Bearer ${UserData.token}',
+//     };
+
+//     final response = await http.get(Uri.parse(apiUrl), headers: headers);
+
+//     // final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/comments'));
+//     // final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/comments/commentaires/${widget.id}'));
+
+//     if (response.statusCode == 200) {
+//       final data = jsonDecode(response.body) as List<dynamic>;
+//       print("ouais tttttttttttttttttttttttttttttttttttt, ${data}");
+//       final fetchedCommentaires = data
+//         .map((item) => Commentaire(
+//               item['_id'] as String,
+//               item['comment'] as String,
+//               item['author'] as Map<String, dynamic>,
+              
+//             ))
+//         .toList();
+
+
+//       setState(() {
+//         isLoading = false; // Cacher le chargement
+//         commentaires = fetchedCommentaires;
+//         // print("ouaissssssssssss, ${commentaires}");
+//       });
+
+//       return fetchedCommentaires;
+//   } else {
+//     throw Exception('Failed to fetch data from MongoDB');
+//   }
+// } 
+
+// Future<double?> fetchRatingAverage() async {
+//   setState(() {
+//     isLoading = true; // Afficher le chargement
+//   });
+
+//   final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/rating/ratings/allusers/${widget.id}'));
+
+//   if (response.statusCode == 200) {
+//     final data = jsonDecode(response.body) as Map<String, dynamic>;
+//     print("average gggggggggggggggggggggggggggggggggggggg, ${data}");
+//     // var average = data['average'] as double;
+//     var average = (data['average'] as num).toDouble();
+//     print("aveeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee, ${average}");
+//     final prestataireData = data['prestataire'] as Map<String, dynamic>;
+
+//     // Utilisez prestataireData comme nécessaire, par exemple, pour accéder à 'nomprenom'
+//     // final nomPrenom = prestataireData['nomprenom'] as String;
+
+//     final fetchedRatingAverage = [
+//       Average(
+//         average,
+//         prestataireData,
+//       ),
+//     ];
+
+//     setState(() {
+//       isLoading = false; // Cacher le chargement
+//       averages = fetchedRatingAverage;
+//       average = fetchedRatingAverage[0].average; // Stocker la moyenne dans la variable d'état
+//       print("ouaissssssssssss zzzzzzzzzzzzzzzz, ${average}");
+//     });
+
+//     return average;
+//   } else {
+//     throw Exception('Failed to fetch data from MongoDB');
+//   }
+// }
+
+Future<double> fetchRatingAverage() async {
+  try {
+    final String apiUrl = 'https://ocean-52xt.onrender.com/rating/ratings/allusers/${widget.id}';
+    final Map<String, String> headers = {
+      'Authorization': 'Bearer ${UserData.token}',
+    };
+
+    final response = await http.get(Uri.parse(apiUrl), headers: headers);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      // var average = data['average'] as double;
+      var average = (data['average'] as num).toDouble();
+
+
+      // Check if average is null, and provide a default value of 0.0
+      return average ?? 0.0;
+    } else {
+      // In case of a failed request, you can throw an exception or return a default value
+      throw Exception('Failed to fetch data');
+    }
+  } catch (e) {
+    // Handle the error and return a default value
+    print('Error: $e');
+    return 0.0;
+  }
+}
+
+
+// Future<double?> fetchRatingAverage() async {
+//   try {
+
+//     final String apiUrl = 'https://ocean-52xt.onrender.com/rating/ratings/allusers/${widget.id}';
+//     final Map<String, String> headers = {
+//       'Authorization':
+//           'Bearer ${UserData.token}',
+//     };
+
+//     final response = await http.get(Uri.parse(apiUrl), headers: headers);
+
+//     // final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/rating/ratings/allusers/${widget.id}'));
+
+//     if (response.statusCode == 200) {
+//       final data = jsonDecode(response.body) as Map<String, dynamic>;
+//       var average = data['average'] as double;
+
+//       return average;
+//     } else {
+//       // En cas d'échec de la requête, vous pouvez renvoyer null ou une valeur par défaut
+//       return null;
+//     }
+//   } catch (e) {
+//     // En cas d'erreur, vous pouvez renvoyer null ou une valeur par défaut
+//     return null;
+//   }
+// }
+
+
+
+//   Future<List<Average>> fetchRatingAverage() async {
+//     setState(() {
+//       isLoading = true; // Afficher le chargement
+//     });
+
+//     // final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/comments'));
+//     final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/rating/ratings/allusers/${widget.id}'));
+
+//     if (response.statusCode == 200) {
+//       final data = jsonDecode(response.body) as List<dynamic>;
+//       print("average gggggggggggggggggggggggggggggggggggggg, ${data}");
+//       final fetchedRatingAverage = data
+//         .map((item) => Average(
+//               // item['_id'] as String,
+//               item['average'] as String,
+//               item['prestataire'] as Map<String, dynamic>,
+              
+//             ))
+//         .toList();
+
+
+//       setState(() {
+//         isLoading = false; // Cacher le chargement
+//         averages = fetchedRatingAverage;
+//         // print("ouaissssssssssss, ${commentaires}");
+//       });
+
+//       return fetchedRatingAverage;
+//   } else {
+//     throw Exception('Failed to fetch data from MongoDB');
+//   }
+// } 
+
 
 
   void lancerAppel(String numero) async {
@@ -314,6 +738,7 @@ void _onItemTapped(int index) async {
   @override
   void initState() {
     super.initState();
+    // ratingId = ""; // Initialisez ratingId avec une valeur non-constante
     isPrestataire = widget.prestataire; // Initialiser la variable d'état locale
     _rating = _initialRating;
     publicitesFuture = fetchData();
@@ -322,6 +747,12 @@ void _onItemTapped(int index) async {
         commentaires = fetchedCommentaires;
       });
     });
+    fetchRatingAverage();
+    // fetchData().then((fetchedRatingAverage) {
+    //   setState(() {
+    //     averages = fetchedRatingAverage;
+    //   });
+    // });
     fetchRating().then((fetchedRating) {
       setState(() {
         ratings = fetchedRating;
@@ -342,7 +773,7 @@ void _onItemTapped(int index) async {
               color: Colors.grey,
               border: Border.all(color: Colors.grey, width: 1.5),
               image: const DecorationImage(image: AssetImage('img/background.jpg'), fit: BoxFit.cover) // Changed Image.asset to AssetImage
-            ),
+          ),
             child: Column(
               children: [
                 const Padding(
@@ -365,80 +796,115 @@ void _onItemTapped(int index) async {
                     ),
                     child: Column(
                       children: [
-                        Container(
-                          alignment: Alignment.bottomLeft,
-                          padding: const EdgeInsets.all(8.0),
-                          // color: Colors.black54,
-                          child: Text(
-                            "Nom commercial : ${widget.nomcommercial}",
-                            style: const TextStyle(
-                              fontSize: 16,
-                              // color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        Container(
-                          alignment: Alignment.bottomLeft,
-                          padding: const EdgeInsets.all(8.0),
-                          // color: Colors.black54,
-                          child: GestureDetector(
-                            onTap: (){
-                              lancerAppel("${widget.numero}");
-                            },
-                            child: Text(
-                              "Numéro : ${widget.numero}",
-                              style: const TextStyle(
-                                fontSize: 16,
-                                // color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                        // const Divider(height: 30,),
-                        Container(
-                          alignment: Alignment.bottomLeft,
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              const Text("Disponible :", style: TextStyle(
-                                fontSize: 16,
-                                // color: Colors.white
-                              ),),
-                              const SizedBox(width: 5,),
-                              Text(UserData.disponible == true ? "Oui" : "Non", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          alignment: Alignment.bottomLeft,
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              const Text("Localiser le prestataire", style: TextStyle(
-                                 fontSize: 16,
-                                ),),
-                              const SizedBox(width: 8,),
-                              ElevatedButton(
-                                onPressed: () {  
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => CartePageMap(
-                                        latitude: widget.latitude,
-                                        longitude: widget.longitude,
-                                      ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              alignment: Alignment.bottomLeft,
+                              padding: const EdgeInsets.all(8.0),
+                              // color: Colors.black54,
+                              child: Column(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(18),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blueAccent,
+                                      // border: Border.all(color: Colors.grey, width: 1.5),
+                                      borderRadius: BorderRadius.circular(30),
                                     ),
-                                  );
-                                },
-                                child: const Icon(Icons.map),
+                                    child: GestureDetector(
+                                      onTap: (){
+                                        lancerAppel("${widget.numero}");
+                                      },
+                                      child: const Icon(Icons.call, color: Colors.white,),
+                                      // Text(
+                                      //   "Numéro : ${widget.numero}",
+                                      //   style: const TextStyle(
+                                      //     fontSize: 16,
+                                      //     // color: Colors.white,
+                                      //   ),
+                                      // ),
+                                    ),
+                                  ),
+                                  Text("Appel")
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                            Container(
+                              alignment: Alignment.bottomLeft,
+                              padding: const EdgeInsets.all(8.0),
+                              // color: Colors.black54,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "Nom commercial",
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      // color: Colors.white,
+                                    ),
+                                  ),
+                                  Text("${widget.nomcommercial}", style: TextStyle(fontWeight: FontWeight.bold),)
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              alignment: Alignment.bottomLeft,
+                              padding: const EdgeInsets.all(8.0),
+                              // color: Colors.black54,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "Disponible",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      // color: Colors.white,
+                                    ),
+                                  ),
+                                  Text(UserData.disponible == true ? "Oui" : "Non", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              alignment: Alignment.bottomLeft,
+                              padding: const EdgeInsets.all(8.0),
+                              // color: Colors.black54,
+                              child: Column(
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () {  
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => CartePageMap(
+                                            latitude: widget.latitude,
+                                            longitude: widget.longitude,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: const Icon(Icons.map),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.only(left: 10),
+                                    child: Text("Localiser le prestataire", style: TextStyle(
+                                      fontSize: 16,
+                                    ),),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 1,),
                         _ratingBar(_ratingBarMode),
-                        Text(
-                          'Rating: $_rating',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
+                        // Text(
+                        //   'Rating: $_rating',
+                        //   style: const TextStyle(fontWeight: FontWeight.bold),
+                        // ),
                         Center(child: const Divider(height: 80,)),
                         _comment()
           
@@ -483,138 +949,328 @@ void _onItemTapped(int index) async {
 
 
     Widget _ratingBar(int mode) {
-      switch (mode) {
-        case 1:
-          return RatingBar.builder(
-            initialRating: _rating,
-            // initialRating: _initialRating,
-            minRating: 1,
-            direction: _isVertical ? Axis.vertical : Axis.horizontal,
-            allowHalfRating: true,
-            unratedColor: Colors.amber.withAlpha(50),
-            itemCount: 5,
-            itemSize: 50.0,
-            itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-            itemBuilder: (context, _) => Icon(
-              _selectedIcon ?? Icons.star,
-              color: Colors.amber,
-            ),
-            onRatingUpdate: (rating) {
-              setState(() {
-                _rating = rating;
-              });
-              ratings.isEmpty ? postRating() : updateRating();
-            },
-            updateOnDrag: true,
-          );
-        case 2:
-          return RatingBar(
-            initialRating: _initialRating,
-            direction: _isVertical ? Axis.vertical : Axis.horizontal,
-            allowHalfRating: true,
-            itemCount: 5,
-            ratingWidget: RatingWidget(
-              // full: _image('assets/heart.png'),
-              full: Icon(Icons.abc),
-              half: Icon(Icons.abc),
-              empty: Icon(Icons.abc),
-              // half: _image('assets/heart_half.png'),
-              // empty: _image('assets/heart_border.png'),
-            ),
-            itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-            onRatingUpdate: (rating) {
-              setState(() {
-                _rating = rating;
-              });
-              ratings.isEmpty ? postRating() : updateRating();
-            },
-            updateOnDrag: true,
-          );
-        case 3:
-          return RatingBar.builder(
-            initialRating: _initialRating,
-            direction: _isVertical ? Axis.vertical : Axis.horizontal,
-            itemCount: 5,
-            itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-            itemBuilder: (context, index) {
-              switch (index) {
-                case 0:
-                  return const Icon(
-                    Icons.sentiment_very_dissatisfied,
-                    color: Colors.red,
-                  );
-                case 1:
-                  return const Icon(
-                    Icons.sentiment_dissatisfied,
-                    color: Colors.redAccent,
-                  );
-                case 2:
-                  return const Icon(
-                    Icons.sentiment_neutral,
-                    color: Colors.amber,
-                  );
-                case 3:
-                  return const Icon(
-                    Icons.sentiment_satisfied,
-                    color: Colors.lightGreen,
-                  );
-                case 4:
-                  return const Icon(
-                    Icons.sentiment_very_satisfied,
-                    color: Colors.green,
-                  );
-                default:
-                  return Container();
-              }
-            },
-            onRatingUpdate: (rating) {
-              setState(() {
-                _rating = rating;
-              });
-              ratings.isEmpty ? postRating() : updateRating();
-            },
-            updateOnDrag: true,
-          );
-        default:
-          return Container();
-    }
+  switch (mode) {
+    case 1:
+      return RatingBar.builder(
+        initialRating: _rating,
+        minRating: 1,
+        direction: _isVertical ? Axis.vertical : Axis.horizontal,
+        allowHalfRating: true,
+        unratedColor: Colors.amber.withAlpha(50),
+        itemCount: 5,
+        itemSize: 50.0,
+        itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+        itemBuilder: (context, _) => Icon(
+          _selectedIcon ?? Icons.star,
+          color: Colors.amber,
+        ),
+        onRatingUpdate: (rating) {
+          setState(() {
+            _rating = rating;
+          });
+          ratings.isEmpty ? postRating() : updateRating();
+        },
+        updateOnDrag: true,
+      );
+    case 2:
+      return RatingBar(
+        initialRating: _rating,
+        direction: _isVertical ? Axis.vertical : Axis.horizontal,
+        allowHalfRating: true,
+        itemCount: 5,
+        ratingWidget: RatingWidget(
+          full: Icon(Icons.abc),
+          half: Icon(Icons.abc),
+          empty: Icon(Icons.abc),
+        ),
+        itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+        onRatingUpdate: (rating) {
+          setState(() {
+            _rating = rating;
+          });
+          ratings.isEmpty ? postRating() : updateRating();
+        },
+        updateOnDrag: true,
+      );
+    case 3:
+      return RatingBar.builder(
+        initialRating: _rating,
+        direction: _isVertical ? Axis.vertical : Axis.horizontal,
+        itemCount: 5,
+        itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+        itemBuilder: (context, index) {
+          switch (index) {
+            case 0:
+              return const Icon(
+                Icons.sentiment_very_dissatisfied,
+                color: Colors.red,
+              );
+            case 1:
+              return const Icon(
+                Icons.sentiment_dissatisfied,
+                color: Colors.redAccent,
+              );
+            case 2:
+              return const Icon(
+                Icons.sentiment_neutral,
+                color: Colors.amber,
+              );
+            case 3:
+              return const Icon(
+                Icons.sentiment_satisfied,
+                color: Colors.lightGreen,
+              );
+            case 4:
+              return const Icon(
+                Icons.sentiment_very_satisfied,
+                color: Colors.green,
+              );
+            default:
+              return Container();
+          }
+        },
+        onRatingUpdate: (rating) {
+          setState(() {
+            _rating = rating;
+          });
+          ratings.isEmpty ? postRating() : updateRating();
+        },
+        updateOnDrag: true,
+      );
+    default:
+      return Container();
   }
-
+}
 
   Widget _profile() {
-    return Container(
-      margin: const EdgeInsets.only(top: 5),
-      child: Column(
-        children: [
-          GestureDetector(
-            onTap: _pickImage,
-            child: CircleAvatar(
-              radius: 50,
-              backgroundImage: _image != null ? FileImage(_image!) : null,
-              child: _image == null
-                  ? Image.asset(
-                      "img/profile.png",
-                      height: 100,
-                      width: 100,
-                      fit: BoxFit.cover,
-                    )
-                  : null,
+  return Container(
+    margin: const EdgeInsets.only(top: 5),
+    child: Column(
+      children: [
+        CachedNetworkImage(
+          imageUrl: widget.photoProfil ?? '',
+          placeholder: (context, url) => const CircularProgressIndicator(),
+          errorWidget: (context, url, error) => const Icon(Icons.error),
+          height: 100,
+          width: MediaQuery.of(context).size.width * 0.350,
+          fit: BoxFit.cover,
+        ),
+        // GestureDetector(
+        //   onTap: _pickImage,
+        //   child: CircleAvatar(
+        //     radius: 50,
+        //     backgroundImage: _image != null ? FileImage(_image!) : null,
+        //     child: _image == null
+        //         ? Image.asset(
+        //             "img/profile.png",
+        //             height: 100,
+        //             width: 100,
+        //             fit: BoxFit.cover,
+        //           )
+        //         : null,
+        //   ),
+        // ),
+        const SizedBox(height: 8,),
+        Column(
+          children: [
+            Text('${widget.nomcommercial}', style: const TextStyle(color: Colors.white, fontSize: 20),),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('${widget.domaineactivite}', style: const TextStyle(color: Colors.white, fontSize: 20),),
+                // SizedBox(width: MediaQuery.sizeOf(context).width * 0.05,),
+                // SizedBox(width: 10,),
+                // Utilisation du nouveau widget pour afficher la moyenne
+                Padding(
+                  padding: const EdgeInsets.only(left: 80.0),
+                  child: _buildAverageWidget(),
+                ),
+              ],
             ),
+            const SizedBox(height: 5,),
+          ],
+        ),
+        const SizedBox(height: 8,),
+      ],
+    ),
+  );
+}
+
+
+// Widget _profile() {
+//   return Container(
+//     margin: const EdgeInsets.only(top: 5),
+//     child: Column(
+//       children: [
+//         GestureDetector(
+//           onTap: _pickImage,
+//           child: CircleAvatar(
+//             radius: 50,
+//             backgroundImage: _image != null ? FileImage(_image!) : null,
+//             child: _image == null
+//                 ? Image.asset(
+//                     "img/profile.png",
+//                     height: 100,
+//                     width: 100,
+//                     fit: BoxFit.cover,
+//                   )
+//                 : null,
+//           ),
+//         ),
+//         const SizedBox(height: 8,),
+//         Column(
+//           children: [
+//             Text('${widget.nomcommercial}', style: const TextStyle(color: Colors.white, fontSize: 20),),
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 Text('${widget.domaineactivite}', style: const TextStyle(color: Colors.white, fontSize: 20),),
+//                 // SizedBox(width: MediaQuery.sizeOf(context).width * 0.05,),
+//                 // SizedBox(width: 10,),
+//                 // Utilisation du nouveau widget pour afficher la moyenne
+//                 Padding(
+//                   padding: const EdgeInsets.only(left: 80.0),
+//                   child: _buildAverageWidget(),
+//                 ),
+//               ],
+//             ),
+//             const SizedBox(height: 5,),
+//           ],
+//         ),
+//         const SizedBox(height: 8,),
+//       ],
+//     ),
+//   );
+// }
+
+Widget _buildAverageWidget() {
+  return FutureBuilder<double?>(
+    future: fetchRatingAverage(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        // Afficher un indicateur de chargement si les données ne sont pas encore disponibles
+        return CircularProgressIndicator(color: Colors.white,);
+      } else if (snapshot.hasError) {
+        // Gérer les erreurs de récupération des données
+        return Text("Erreur: ${snapshot.error}");
+      } else {
+        // Les données ont été récupérées avec succès
+        return Container(
+          alignment: Alignment.bottomLeft,
+          child: Text(
+            '${snapshot.data}',
+            style: TextStyle(fontSize: 18, color: Colors.white),
           ),
-          const SizedBox(height: 8,),
-          Column(
-            children: [
-              Text('${widget.nomcommercial}', style: const TextStyle(color: Colors.white, fontSize: 20),),
-              Text('${widget.domaineactivite}', style: const TextStyle(color: Colors.white, fontSize: 20),),
-              const SizedBox(height: 5,),
-              // Text('Rating: $_rating'),
-            ],
-          ),
-          const SizedBox(height: 8,),
-        ],
-      ),
-    );
-  }
+        );
+      }
+    },
+  );
+}
+
+
+//  Widget _profile() {
+//     return FutureBuilder<double?>(
+//       future: fetchRatingAverage(),
+//       builder: (context, snapshot) {
+//         if (snapshot.connectionState == ConnectionState.waiting) {
+//           // Afficher un indicateur de chargement si les données ne sont pas encore disponibles
+//           return CircularProgressIndicator();
+//         } else if (snapshot.hasError) {
+//           // Gérer les erreurs de récupération des données
+//           return Text("Erreur: ${snapshot.error}");
+//         } else {
+//           // Les données ont été récupérées avec succès
+//           return Container(
+//             margin: const EdgeInsets.only(top: 5),
+//             child: Column(
+//               children: [
+//                 GestureDetector(
+//                   onTap: _pickImage,
+//                   child: CircleAvatar(
+//                     radius: 50,
+//                     backgroundImage: _image != null ? FileImage(_image!) : null,
+//                     child: _image == null
+//                         ? Image.asset(
+//                             "img/profile.png",
+//                             height: 100,
+//                             width: 100,
+//                             fit: BoxFit.cover,
+//                           )
+//                         : null,
+//                   ),
+//                 ),
+//                 const SizedBox(height: 8,),
+//                 Column(
+//                   children: [
+//                     Text('${widget.nomcommercial}', style: const TextStyle(color: Colors.white, fontSize: 20),),
+//                     Row(
+//                       children: [
+//                         Text('${widget.domaineactivite}', style: const TextStyle(color: Colors.white, fontSize: 20),),
+//                         if (snapshot.data != null)
+//                           Text(
+//                             'Moyenne : ${snapshot.data}',
+//                             style: TextStyle(fontSize: 18),
+//                           ),
+//                       ],
+//                     ),
+//                     const SizedBox(height: 5,),
+//                   ],
+//                 ),
+//                 const SizedBox(height: 8,),
+//               ],
+//             ),
+//           );
+//         }
+//       },
+//     );
+//   }
+// }
+
+
+  // Widget _profile() {
+  //   return Container(
+  //     margin: const EdgeInsets.only(top: 5),
+  //     child: Column(
+  //       children: [
+  //         GestureDetector(
+  //           onTap: _pickImage,
+  //           child: CircleAvatar(
+  //             radius: 50,
+  //             backgroundImage: _image != null ? FileImage(_image!) : null,
+  //             child: _image == null
+  //                 ? Image.asset(
+  //                     "img/profile.png",
+  //                     height: 100,
+  //                     width: 100,
+  //                     fit: BoxFit.cover,
+  //                   )
+  //                 : null,
+  //           ),
+  //         ),
+  //         const SizedBox(height: 8,),
+  //         Column(
+  //           children: [
+  //             Text('${widget.nomcommercial}', style: const TextStyle(color: Colors.white, fontSize: 20),),
+  //             Row(
+  //               mainAxisAlignment: MainAxisAlignment.center,
+  //               children: [
+  //                 Text('${widget.domaineactivite}', style: const TextStyle(color: Colors.white, fontSize: 20),),
+  //                 // if (average != null) // Ajoutez cette condition
+  //                   Text(
+  //                     'Moyenne : $average',
+  //                     style: TextStyle(fontSize: 18, color: Colors.white),
+  //                   ),
+  //               ],
+  //             ),
+  //             const SizedBox(height: 5,),
+  //             // Text('Rating: $_rating'),
+  //           ],
+  //         ),
+  //         const SizedBox(height: 8,),
+  //       ],
+  //     ),
+  //   );
+  // }
 
 
   Widget _comment() {
@@ -720,101 +1376,6 @@ void _onItemTapped(int index) async {
 }
 
 
-
-
-//   void _onItemTapped(int index) async {
-//     setState(() {
-//       _selectedIndex = index;
-//       if (index == 1) {
-//         // Affichez une boîte de dialogue ou naviguez vers une nouvelle page pour laisser un commentaire ici
-//         showDialog(
-//           context: context,
-//           builder: (context) {
-//             return AlertDialog(
-//               title: Text('Laisser un commentaire'),
-//               content: TextField(
-//                 controller: usernameController,
-//                 decoration: InputDecoration(hintText: 'Entrez votre commentaire ici'),
-//               ),
-//               actions: [
-//                 TextButton(
-//                   onPressed: () async {
-//                     // Ajoutez votre logique pour enregistrer le commentaire ici
-//                     print("postttttttttttttttttttttt");
-//                     await fetchData1(); // Attendre la fin de la requête POST
-//                     print("gettttttttttttttttttttttttt");
-//                     await fetchData(); // Attendre la fin de la requête GET
-//                     Navigator.of(context).pop();
-//                   },
-//                   child: Text('Envoyer'),
-//                 ),
-//               ],
-//             );
-//           },
-//         );
-//       }
-//     });
-// }
-
-
-  // void _onItemTapped(int index) {
-  //   setState(() {
-  //     _selectedIndex = index;
-  //     if (index == 1) {
-  //       // Affichez une boîte de dialogue ou naviguez vers une nouvelle page pour laisser un commentaire ici
-  //       showDialog(
-  //         context: context,
-  //         builder: (context) {
-  //           return AlertDialog(
-  //             title: Text('Laisser un commentaire'),
-  //             content: TextField(
-  //               controller: usernameController,
-  //               decoration: InputDecoration(hintText: 'Entrez votre commentaire ici'),
-  //             ),
-  //             actions: [
-  //               TextButton(
-  //                 onPressed: () {
-  //                   // Ajoutez votre logique pour enregistrer le commentaire ici
-  //                   print("postttttttttttttttttttttt");
-  //                   fetchData1();
-  //                   print("gettttttttttttttttttttttttt");
-  //                   fetchData();
-  //                   Navigator.of(context).pop();
-                    
-  //                 },
-  //                 child: Text('Envoyer'),
-  //               ),
-  //             ],
-  //           );
-  //         },
-  //       );
-  //     }
-  //   });
-  // }
-
-  // // Mettre à jour un rating
-  // Future<void> updateRating(double rating) async {
-  //   var apiUrl = 'https://ocean-52xt.onrender.com/users/partenaires/${widget.id}'; // Remplacez cela par votre URL d'API
-  //   var requestBody = {'rating': rating.toString()}; // Les données que vous voulez envoyer à la base de données
-
-  //   try {
-  //     var response = await http.put(
-  //       apiUrl as Uri,
-  //       body: requestBody,
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       // La requête a réussi
-  //       print('Rating enregistré avec succès dans la base de données.');
-  //     } else {
-  //       // La requête a échoué avec une erreur
-  //       print('Échec de l\'enregistrement du rating dans la base de données. Statut: ${response.statusCode}');
-  //     }
-  //   } catch (error) {
-  //     // Une erreur s'est produite lors de l'envoi de la requête
-  //     print('Erreur lors de l\'envoi de la requête: $error');
-  //   }
-  // } //A décommenter
 
 
 

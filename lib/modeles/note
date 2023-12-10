@@ -1,0 +1,95 @@
+//   void _onItemTapped(int index) async {
+//     setState(() {
+//       _selectedIndex = index;
+//       if (index == 1) {
+//         // Affichez une boîte de dialogue ou naviguez vers une nouvelle page pour laisser un commentaire ici
+//         showDialog(
+//           context: context,
+//           builder: (context) {
+//             return AlertDialog(
+//               title: Text('Laisser un commentaire'),
+//               content: TextField(
+//                 controller: usernameController,
+//                 decoration: InputDecoration(hintText: 'Entrez votre commentaire ici'),
+//               ),
+//               actions: [
+//                 TextButton(
+//                   onPressed: () async {
+//                     // Ajoutez votre logique pour enregistrer le commentaire ici
+//                     print("postttttttttttttttttttttt");
+//                     await fetchData1(); // Attendre la fin de la requête POST
+//                     print("gettttttttttttttttttttttttt");
+//                     await fetchData(); // Attendre la fin de la requête GET
+//                     Navigator.of(context).pop();
+//                   },
+//                   child: Text('Envoyer'),
+//                 ),
+//               ],
+//             );
+//           },
+//         );
+//       }
+//     });
+// }
+
+
+  // void _onItemTapped(int index) {
+  //   setState(() {
+  //     _selectedIndex = index;
+  //     if (index == 1) {
+  //       // Affichez une boîte de dialogue ou naviguez vers une nouvelle page pour laisser un commentaire ici
+  //       showDialog(
+  //         context: context,
+  //         builder: (context) {
+  //           return AlertDialog(
+  //             title: Text('Laisser un commentaire'),
+  //             content: TextField(
+  //               controller: usernameController,
+  //               decoration: InputDecoration(hintText: 'Entrez votre commentaire ici'),
+  //             ),
+  //             actions: [
+  //               TextButton(
+  //                 onPressed: () {
+  //                   // Ajoutez votre logique pour enregistrer le commentaire ici
+  //                   print("postttttttttttttttttttttt");
+  //                   fetchData1();
+  //                   print("gettttttttttttttttttttttttt");
+  //                   fetchData();
+  //                   Navigator.of(context).pop();
+                    
+  //                 },
+  //                 child: Text('Envoyer'),
+  //               ),
+  //             ],
+  //           );
+  //         },
+  //       );
+  //     }
+  //   });
+  // }
+
+  // // Mettre à jour un rating
+  // Future<void> updateRating(double rating) async {
+  //   var apiUrl = 'https://ocean-52xt.onrender.com/users/partenaires/${widget.id}'; // Remplacez cela par votre URL d'API
+  //   var requestBody = {'rating': rating.toString()}; // Les données que vous voulez envoyer à la base de données
+
+  //   try {
+  //     var response = await http.put(
+  //       apiUrl as Uri,
+  //       body: requestBody,
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       // La requête a réussi
+  //       print('Rating enregistré avec succès dans la base de données.');
+  //     } else {
+  //       // La requête a échoué avec une erreur
+  //       print('Échec de l\'enregistrement du rating dans la base de données. Statut: ${response.statusCode}');
+  //     }
+  //   } catch (error) {
+  //     // Une erreur s'est produite lors de l'envoi de la requête
+  //     print('Erreur lors de l\'envoi de la requête: $error');
+  //   }
+  // } //A décommenter
+
+
