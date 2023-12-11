@@ -135,7 +135,7 @@ class _ConnexionState extends State<Connexion> {
           String nomprenom = cordonnees["nomprenom"];
           String email = cordonnees["email"];
           int numero = cordonnees["numero"];
-          String photoProfil = cordonnees["photoProfil"];
+          // String photoProfil = cordonnees["photoProfil"];
           bool confirmation = cordonnees["confirmation"];
           String nomcommercial = cordonnees["nomcommercial"];
           String domaineactivite = cordonnees["domaineactivite"];
@@ -149,7 +149,7 @@ class _ConnexionState extends State<Connexion> {
           UserData.nomprenom = nomprenom;
           UserData.email = email;
           UserData.numero = numero;
-          UserData.photoProfil = photoProfil;
+          // UserData.photoProfil = photoProfil;
           UserData.confirmation = confirmation;
           UserData.nomcommercial = nomcommercial;
           UserData.domaineactivite = domaineactivite;
@@ -186,7 +186,7 @@ class _ConnexionState extends State<Connexion> {
           prefs.setString('nomprenom', UserData.nomprenom);
           prefs.setString('email', UserData.email);
           prefs.setInt('numero', UserData.numero);
-          prefs.setString('photoProfil', UserData.photoProfil);
+          // prefs.setString('photoProfil', UserData.photoProfil);
           prefs.setBool('confirmation', UserData.confirmation);
           prefs.setString('nomcommercial', UserData.nomcommercial);
           prefs.setString('domaineactivite', UserData.domaineactivite);

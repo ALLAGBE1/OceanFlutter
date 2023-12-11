@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_string_interpolations, use_build_context_synchronously, depend_on_referenced_packages, avoid_print
+// ignore_for_file: unnecessary_string_interpolations, use_build_context_synchronously, depend_on_referenced_packages, avoid_print, prefer_interpolation_to_compose_strings
 
 import 'dart:convert';
 import 'dart:io';
@@ -54,6 +54,7 @@ class _CompteClientState extends State<CompteClient> {
   final ImagePicker _picker = ImagePicker();
 
   bool isLoading = true;
+
   List<Prestataire> prestataires = [];
 
 
@@ -86,7 +87,6 @@ class _CompteClientState extends State<CompteClient> {
       }
     });
   }
-
 
   Future<void> fetchPrestataires() async {
   setState(() {
@@ -148,6 +148,56 @@ class _CompteClientState extends State<CompteClient> {
 }
 
 
+  // Future<void> fetchPrestataires() async {
+  //   setState(() {
+  //     isLoading = true; // Afficher le chargement
+  //   });
+
+  //   try {
+  
+  //     final apiUrl = 'https://ocean-52xt.onrender.com/users/prestataire/${UserData.id}';
+  //     print("Je veux voir l'url donne le : .......................... : ${apiUrl}");
+  //     // final response = await http.get(Uri.parse(apiUrl));
+  //     final response = await http.get(Uri.parse(apiUrl));
+  //     print("Réponse de l'API : ${response.body}");
+
+
+  //     if (response.statusCode == 200) {
+  //       final data = jsonDecode(response.body) ;
+  //       print("Voici les résultats obtenus ::::::::::::::::::::::::::::::::::::::::::::::: ${data}");
+  //       final fetchedPrestataires = (data['data'] as List<dynamic>)
+  //         .map((item) => Prestataire(
+  //               item['_id'] as String,
+  //               item['nomprenom'] as String,
+  //               item['email'] as String,
+  //               item['downloadUrl'] != null ? item['downloadUrl'] as String : "",
+  //               item['prestataire'] as bool,
+  //               item['username'] as String,
+  //               item['domaineactivite'] as String,
+  //               item['distance'] as int,
+  //               item['nomcommercial'] as String,
+  //               item['numero'] as int,
+  //               item['photoProfil'] as String,
+  //               // item['rating'] as int,
+  //             ))
+  //         .toList();
+
+  //       setState(() {
+  //         isLoading = false; // Cacher le chargement
+  //         prestataires = fetchedPrestataires;
+  //       });
+
+  //       return;
+  //     } else {
+  //       print('Erreur lors de la récupération des données');
+  //     }
+  //   } catch (error) {
+  //     print('Erreur lors de la requête HTTP : $error');
+  //   }
+  // }
+
+
+
   // Fonction pour mettre à jour l'état du partenaire
   Future<void> updatePrestataireState(bool newState) async {
     final String apiUrl = 'https://ocean-52xt.onrender.com/users/prestataires/${UserData.id}';
@@ -184,7 +234,6 @@ class _CompteClientState extends State<CompteClient> {
 
       Response response = await dio.put(
         'https://ocean-52xt.onrender.com/users/updateImageProfile/${UserData.id}',
-        // 'http://localhost:3000/users/updateImageProfile/${UserData.id}',
         data: formData,
         options: Options(
           headers: {'Content-Type': 'multipart/form-data'},
@@ -204,6 +253,70 @@ class _CompteClientState extends State<CompteClient> {
   }
 }
 
+//   Future<void> putPhotoProfil() async {
+//   if (_image != null) {
+//     print('UserID: ${UserData.id}'); // Vérifier la valeur de l'ID de l'utilisateur
+//     var headers = {
+//       'Content-Type': 'application/json'
+//     };
+    
+//     // Utilisation de FormData pour envoyer à la fois l'image et d'autres données
+//     // var request = http.MultipartRequest('PUT', Uri.parse('https://ocean-52xt.onrender.com/users/updateImageProfile/${UserData.id}'));
+//     var request = http.MultipartRequest('PUT', Uri.parse('http://192.168.43.69:3000/users/updateImageProfile/${UserData.id}'));
+//     request.headers.addAll(headers);
+
+//     print('UserID: RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR'); // Vérifier la valeur de l'ID de l'utilisateur
+
+//     // Ajouter l'image
+//     request.files.add(await http.MultipartFile.fromPath('photoProfil', _image!.path));
+
+//     print('UserID: ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ'); // Vérifier la valeur de l'ID de l'utilisateur
+
+//     try {
+//       http.StreamedResponse response = await request.send();
+//       if (response.statusCode == 200) {
+//         print(await response.stream.bytesToString());
+//       } else {
+//         print('Error: ${response.reasonPhrase}');
+//       }
+//     } catch (error) {
+//       print('Error: $error');
+//     }
+//   } else {
+//     print('Image not selected');
+//   }
+// }
+
+
+//   Future<void> putPhotoProfil() async {
+//   if (_image != null) {
+//     print('UserID: ${UserData.id}'); // Vérifier la valeur de l'ID de l'utilisateur
+//     var headers = {
+//       'Content-Type': 'application/json'
+//     };
+//     var request = http.MultipartRequest('PUT', Uri.parse('https://ocean-52xt.onrender.com/users/update/${UserData.id}', 
+//       body: {'disponible': photoProfil.toString()},
+//     ));
+   
+//     request.files.add(await http.MultipartFile.fromPath('photoProfil', _image!.path));
+
+//     try {
+//       http.StreamedResponse response = await request.send();
+//       if (response.statusCode == 200) {
+//         print(await response.stream.bytesToString());
+//       } else {
+//         print('Error: ${response.reasonPhrase}');
+//       }
+//     } catch (error) {
+//       print('Error: $error');
+//     }
+//   } else {
+//     print('Image not selected');
+//   }
+// }
+
+
+
 
   void handleLogout(BuildContext context) async {
     bool success = await logoutUser();
@@ -222,7 +335,7 @@ class _CompteClientState extends State<CompteClient> {
       await prefs.remove('id');
       await prefs.remove('token');
       await prefs.remove('nomprenom');
-      // await prefs.remove('photoProfil');
+      await prefs.remove('photoProfil');
       await prefs.remove('confirmation');
       await prefs.remove('username');
       await prefs.remove('email');
@@ -301,9 +414,7 @@ class _CompteClientState extends State<CompteClient> {
     );
   }
 
-// _photoProfilUrl
-
-Widget _profile() {
+  Widget _profile() {
   return Container(
     margin: const EdgeInsets.only(top: 5),
     child: Column(
@@ -312,25 +423,25 @@ Widget _profile() {
           onTap: _pickImage,
           child: CircleAvatar(
             radius: 50,
-            child: _image != null
-                ? Image.file(
-                    _image!,
-                    height: 100,
-                    width: 100,
-                    fit: BoxFit.cover,
+            child: _photoProfilUrl != null && _photoProfilUrl!.isNotEmpty
+                ? ClipOval(
+                    child: Image.network(
+                      _photoProfilUrl!,
+                      height: 100,
+                      width: 100,
+                      fit: BoxFit.cover,
+                    ),
                   )
-                : (_photoProfilUrl) != null
-                    ? ClipOval(
-                        child: Image.network(
-                          _photoProfilUrl!,
-                          height: 100,
-                          width: 100,
-                          fit: BoxFit.cover,
-                        ),
+                : _image != null
+                    ? Image.file(
+                        _image!,
+                        height: 100,
+                        width: 100,
+                        fit: BoxFit.cover,
                       )
                     : const Icon(
-                      Icons.person,
-                      size: 80,
+                        Icons.person,
+                        size: 80,
                       ),
           ),
         ),
@@ -347,6 +458,99 @@ Widget _profile() {
     ),
   );
 }
+
+
+//   Widget _profile() {
+//   return Container(
+//     margin: const EdgeInsets.only(top: 5),
+//     child: Column(
+//       children: [
+//         GestureDetector(
+//           onTap: _pickImage,
+//           child: CircleAvatar(
+//             radius: 50,
+//             child: (_photoProfilUrl != null && _photoProfilUrl!.isNotEmpty)
+//                 ? ClipOval(
+//                     child: Image.network(
+//                       _photoProfilUrl!,
+//                       height: 100,
+//                       width: 100,
+//                       fit: BoxFit.cover,
+//                     ),
+//                   )
+//                 : (_image != null)
+//                     ? Image.file(
+//                         _image!,
+//                         height: 100,
+//                         width: 100,
+//                         fit: BoxFit.cover,
+//                       )
+//                     : const Icon(
+//                         Icons.person,
+//                         size: 80,
+//                       ),
+//           ),
+//         ),
+//         const SizedBox(height: 8,),
+//         Column(
+//           children: [
+//             Text('${UserData.nomprenom}', style: const TextStyle(color: Colors.white),),
+//             Text('${UserData.email}', style: const TextStyle(color: Colors.white),),
+//             const SizedBox(height: 25,)
+//           ],
+//         ),
+//         const SizedBox(height: 8,),
+//       ],
+//     ),
+//   );
+// }
+
+
+//   Widget _profile() {
+//   return Container(
+//     margin: const EdgeInsets.only(top: 5),
+//     child: Column(
+//       children: [
+//         GestureDetector(
+//           onTap: _pickImage,
+//           child: CircleAvatar(
+//             radius: 50,
+//             child: _image != null
+//                 ? Image.file(
+//                     _image!,
+//                     height: 100,
+//                     width: 100,
+//                     fit: BoxFit.cover,
+//                   )
+//                 : (_photoProfilUrl != null && _photoProfilUrl!.isNotEmpty)
+//                     ? ClipOval(
+//                         child: Image.network(
+//                           _photoProfilUrl!,
+//                           height: 100,
+//                           width: 100,
+//                           fit: BoxFit.cover,
+//                         ),
+//                       )
+//                     : const Icon(
+//                         Icons.person,
+//                         size: 80,
+//                       ),
+//           ),
+//         ),
+//         const SizedBox(height: 8,),
+//         Column(
+//           children: [
+//             Text('${UserData.nomprenom}', style: const TextStyle(color: Colors.white),),
+//             Text('${UserData.email}', style: const TextStyle(color: Colors.white),),
+//             const SizedBox(height: 25,)
+//           ],
+//         ),
+//         const SizedBox(height: 8,),
+//       ],
+//     ),
+//   );
+// }
+
 
 // Widget _profile() {
 //   return Container(

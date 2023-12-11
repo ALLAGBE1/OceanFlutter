@@ -4,7 +4,7 @@ class UserData {
   static String username = '';
   static String nomprenom = '';
   static String email = '';
-  static String photoProfil = '';
+  // static String photoProfil = '';
   static bool confirmation = false;
   static String nomcommercial = '';
   static String domaineactivite = '';

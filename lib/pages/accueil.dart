@@ -271,13 +271,23 @@ class _AccueilState extends State<Accueil> {
 //     }
 //   } 
 
-  Future<List<Metier>> fetchData() async {
+Future<List<Metier>> fetchData() async {
   try {
+    if (!mounted) {
+      // Vérifier si le widget est toujours monté
+      return [];
+    }
+
     setState(() {
       isLoading = true; // Afficher le chargement
     });
 
     final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/domaineActivite'));
+
+    if (!mounted) {
+      // Vérifier à nouveau après l'appel réseau
+      return [];
+    }
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as List<dynamic>;
@@ -299,12 +309,51 @@ class _AccueilState extends State<Accueil> {
     }
   } catch (error) {
     print('Error fetching data: $error');
-    setState(() {
-      isLoading = false; // Cacher le chargement en cas d'erreur
-    });
+    if (mounted) {
+      // Vérifier si le widget est toujours monté avant d'appeler setState
+      setState(() {
+        isLoading = false; // Cacher le chargement en cas d'erreur
+      });
+    }
     return []; // Retourner une liste vide en cas d'erreur
   }
 }
+
+
+//   Future<List<Metier>> fetchData() async {
+//   try {
+//     setState(() {
+//       isLoading = true; // Afficher le chargement
+//     });
+
+//     final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/domaineActivite'));
+
+//     if (response.statusCode == 200) {
+//       final data = jsonDecode(response.body) as List<dynamic>;
+//       final fetchedmetiers = data
+//           .map((item) => Metier(
+//                 item['_id'] as String,
+//                 item['domaineactivite'] as String,
+//               ))
+//           .toList();
+
+//       setState(() {
+//         isLoading = false; // Cacher le chargement
+//         metiers = fetchedmetiers;
+//       });
+
+//       return fetchedmetiers;
+//     } else {
+//       throw Exception('Failed to fetch data from MongoDB');
+//     }
+//   } catch (error) {
+//     print('Error fetching data: $error');
+//     setState(() {
+//       isLoading = false; // Cacher le chargement en cas d'erreur
+//     });
+//     return []; // Retourner une liste vide en cas d'erreur
+//   }
+// }
 
 
   // Future<List<Metier>> fetchData() async {

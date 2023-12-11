@@ -928,10 +928,11 @@ class _PartenaireState extends State<Partenaire> {
                     CupertinoButton(
                       
                       padding: EdgeInsets.zero,
-                      child: const Icon(
-                        Icons.qr_code_scanner, // Icône de scanner
-                        color: Colors.grey,
-                      ),
+                      // child: const Icon(
+                      //   Icons.qr_code_scanner, // Icône de scanner
+                      //   color: Colors.grey,
+                      // ),
+                      child: Container(),
                       onPressed: () {
                         Navigator.push(
                           context,

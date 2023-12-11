@@ -43,8 +43,8 @@ class _PreConnexionState extends State<PreConnexion> {
     print("tokennnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn ${token}");
     String? username= prefs.getString('username');
     print("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz ${username}");
-    String? photoProfil= prefs.getString('photoProfil');
-    print("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr ${photoProfil}");
+    // String? photoProfil= prefs.getString('photoProfil');
+    // print("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr ${photoProfil}");
     String? nomprenom = prefs.getString('nomprenom');
     print("222222222222222222222222222222222222222222 ${nomprenom}");
     String? email = prefs.getString('email');
@@ -72,13 +72,13 @@ class _PreConnexionState extends State<PreConnexion> {
 
     // if (id != null && nomprenom != null && email != null && documentfournirId != null && disponible != null  && domaineactivite != null 
     //   && nomcommercial != null && latitude != null && longitude != null && nomDuLieu != null) {
-      if (token != null && id != null && username != null && photoProfil != null && nomprenom != null && email != null && documentfournirId != null && disponible != null && confirmation != null
+      if (token != null && id != null && username != null && nomprenom != null && email != null && documentfournirId != null && disponible != null && confirmation != null
         && domaineactivite != null && nomcommercial != null && latitude != null && longitude != null && isAdmin != null) {
       // Mettez à jour les données de l'utilisateur en mémoire
         UserData.id = id;
         UserData.token = token;
         UserData.username = username;
-        UserData.photoProfil = photoProfil;
+        // UserData.photoProfil = photoProfil;
         UserData.nomprenom = nomprenom;
         UserData.email = email;
         UserData.numero = numero?? UserData.numero; //Je dois revoir si possible cette ligne;
