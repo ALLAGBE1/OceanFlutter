@@ -261,7 +261,7 @@ class _CompteClientState extends State<CompteClient> {
                   onTap:() {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => MiseAJour())
+                      MaterialPageRoute(builder: (context) => const MiseAJour())
                     );
                   },
                   child: const Icon(Icons.drive_file_rename_outline_rounded, color: Colors.white,

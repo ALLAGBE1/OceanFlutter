@@ -40,28 +40,17 @@ class Average {
 
 class Rating {
   final String id;
+  final String rating;
   final Map<String, dynamic> author;
   final String prestataire;
-  final dynamic rating; // Utiliser le type dynamic ici
+  // final int rating; // Nouvelle propriété pour stocker la notation du prestataire
 
-  Rating(this.id, this.author, this.prestataire, this.rating);
 
+  Rating(this.id, this.author, this.prestataire, this.rating
+  //  this.rating
+  );
   String get nomprenom => author['nomprenom'];
 }
-
-// class Rating {
-//   final String id;
-//   final String rating;
-//   final Map<String, dynamic> author;
-//   final String prestataire;
-//   // final int rating; // Nouvelle propriété pour stocker la notation du prestataire
-
-
-//   Rating(this.id, this.author, this.prestataire, this.rating
-//   //  this.rating
-//   );
-//   String get nomprenom => author['nomprenom'];
-// }
 
 
 class ModelePrestataire extends StatefulWidget {
@@ -172,7 +161,6 @@ class _ModelePrestataireState extends State<ModelePrestataire> {
   });
 
   final String apiUrl = 'https://ocean-52xt.onrender.com/myrating/ratings/${widget.id}?author=${UserData.id}';
-  print("Jésusssssssssssssssssssssssssssssssssssssssssssssssssssssssss" + apiUrl);
   final Map<String, String> headers = {
     // 'Authorization':
     //     'Bearer ${UserData.token}',
@@ -186,16 +174,8 @@ class _ModelePrestataireState extends State<ModelePrestataire> {
       print("ouais ratingggggggggggggggggggggggggggggggggggggg, ${dataRating}");
 
       if (dataRating.isNotEmpty) {
-        print("888888888888888888888888888888888888");
-        // ratingNumber = dataRating[0]['rating'];
-        // print("ouais 11111111111111111111111111111111111111, ${ratingNumber}");
-        // _rating = double.parse(ratingNumber);
-        _rating = dataRating[0]['rating'].toDouble();
-        print("ouais 22222222222222222222222222222222222222222, ${_rating}");
-
-        // String ratingId = dataRating[0]['_id'];
-        ratingId = dataRating[0]['_id'];
-        print("ouais ID du rating : $ratingId");
+        ratingNumber = dataRating[0]['rating'];
+        _rating = double.parse(ratingNumber);
       } else {
         _rating = 0.0;
       }
@@ -205,9 +185,7 @@ class _ModelePrestataireState extends State<ModelePrestataire> {
                 item['_id'] as String,
                 item['author'] as Map<String, dynamic>,
                 item['prestataire'] as String,
-                // item['rating'] as String,
-                // item['rating'].toString(),
-                item['rating'], // Utiliser le type dynamic ici
+                item['rating'] as String,
               ))
           .toList();
 
@@ -219,18 +197,193 @@ class _ModelePrestataireState extends State<ModelePrestataire> {
       return fetchedRating;
     } else {
       // Gérer le cas d'erreur ici
-      throw Exception('Failed to fetch data from MongoDB. fetchRating()');
+      throw Exception('Failed to fetch data from MongoDB');
     }
   } catch (error) {
     // Gérer les erreurs liées à la requête ici
     print('Error: $error');
-    
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Erreur'),
+          content: const Text('Une erreur est survenue lors de la connexion au serveur.'),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+
     // Renvoyer une liste vide en cas d'erreur
     return [];
   }
 }
 
 
+//     Future<List<Rating>> fetchRating() async {
+//     setState(() {
+//       isLoading = true; // Afficher le chargement
+//     });
+
+//     final String apiUrl = 'https://ocean-52xt.onrender.com/rating/ratings/${widget.id}?author=${UserData.id}';
+//     final Map<String, String> headers = {
+//       'Authorization':
+//           'Bearer ${UserData.token}',
+//     };
+
+//     final response = await http.get(Uri.parse(apiUrl), headers: headers);
+
+//     // final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/rating/ratings/${widget.id}?author=${UserData.id}'));
+//     // final response = await http.get(Uri.parse('http://ocean-52xt.onrender.com/rating/ratings/${widget.id}?author=${UserData.id}'));
+
+//     if (response.statusCode == 200) {
+//       // final dataRating = json.decode(response.body);
+//       final dataRating = jsonDecode(response.body) as List<dynamic>;
+//       print("ouais ratingggggggggggggggggggggggggggggggggggggg, ${dataRating}");
+//       for (var datr in dataRating) {
+//         ratingId = datr['_id'];
+//         print("ratingId, ${ratingId}");
+//       }
+//       for (var datr1 in dataRating) {
+//         ratingNumber = datr1['rating'];
+//         print("rating, ${ratingNumber}");
+//       }
+//       if (dataRating.isNotEmpty) {
+//         // Utilisez le rating récupéré
+//         ratingNumber = dataRating[0]['rating'];
+//         _rating = double.parse(ratingNumber);
+//       } else {
+//         // Si aucun rating n'est disponible, initialisez _rating à 0.0
+//         _rating = 0.0;
+//       }
+//       // if (dataRating.isNotEmpty) {
+//       //   ratingId = dataRating[0]['_id'];
+//       //   print("Rating ID récupéré : $ratingId");
+//       // }
+//       final fetchedRating = dataRating
+//         // .whereType<Map<String, dynamic>>() // Filtrer les éléments qui ne sont pas des Map<String, dynamic>
+//         .map((item) => Rating(
+//               item['_id'] as String,
+//               item['author'] as Map<String, dynamic>,
+//               item['prestataire'] as String,
+//               item['rating'] as String,
+              
+//             ))
+//         .toList();
+
+
+//       setState(() {
+//         isLoading = false; // Cacher le chargement
+//         ratings = fetchedRating;
+//         // print("ouaissssssssssss, ${commentaires}");
+//         // _rating = fetchedRating.isNotEmpty ? data[1] : 0.0;
+//       });
+
+//       return fetchedRating;
+//   } else {
+//     // throw Exception('Failed to fetch data from MongoDB');
+//     showDialog(
+//           context: context,
+//           builder: (BuildContext context) {
+//             return AlertDialog(
+//               title: const Text('Erreur'),
+//               // content: Text('Une erreur est survenue lors de la connexion.'),
+//               content: const Text('Une erreur est survenue lors de la connexion au serveur.'),
+//               // content: const Text('Une erreur est survenue lors de la connexion.'),
+//               actions: [
+//                 TextButton(
+//                   child: const Text('OK'),
+//                   onPressed: () {
+//                     Navigator.of(context).pop();
+//                   },
+//                 ),
+//               ],
+//             );
+//           },
+//         );
+//   }
+// }
+
+
+//   Future<List<Rating>> postRating() async {
+//   setState(() {
+//     isLoading = true; // Afficher le chargement
+//   });
+
+//   double username = _rating;
+//   var headers = {
+//     'Content-Type': 'application/json'
+//   };
+
+//   try {
+//     var request = http.Request('POST', Uri.parse('https://ocean-52xt.onrender.com/rating'));
+//     request.body = json.encode({
+//       "rating": username,
+//       "author": UserData.id,
+//       "prestataire": widget.id
+//     });
+//     request.headers.addAll(headers);
+
+//     http.StreamedResponse response = await request.send();
+
+//     if (response.statusCode == 200) {
+//       var jsonString = await response.stream.bytesToString();
+//       print(jsonString);
+
+//       // Mise à jour de l'état (ajoutez votre logique si nécessaire)
+//       setState(() {
+//         ratings.add(Rating(
+//           // Ajoutez les données nécessaires pour créer un nouvel objet Rating
+          
+//         ));
+//       });
+
+//       return ratings;
+//     } else {
+//       // Gérez les erreurs ici, vous pouvez renvoyer une liste vide ou lancer une exception selon le cas
+//       print('Erreur lors de la création du rating');
+//       throw Exception('Erreur lors de la création du rating');
+//     }
+//   } catch (error) {
+//     // Gérer les erreurs liées à la requête ici
+//     print('Erreur lors de la requête HTTP : $error');
+//     showDialog(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return AlertDialog(
+//           title: const Text('Erreur'),
+//           content: const Text('Une erreur est survenue lors de la connexion au serveur.'),
+//           actions: [
+//             TextButton(
+//               child: const Text('OK'),
+//               onPressed: () {
+//                 Navigator.of(context).pop();
+//               },
+//             ),
+//           ],
+//         );
+//       },
+//     );
+
+//     // Renvoyer une liste vide en cas d'erreur
+//     return [];
+//   } finally {
+//     // Masquer le chargement après la requête, même en cas d'erreur
+//     if (mounted) {
+//       setState(() {
+//         isLoading = false;
+//       });
+//     }
+//   }
+// }
+
+    
 
 
   // Poster un rating
@@ -269,7 +422,7 @@ class _ModelePrestataireState extends State<ModelePrestataire> {
     };
     // var urlRating = "http://192.168.137.1:3000/rating/$ratingId"; 
     var urlRating = "https://ocean-52xt.onrender.com/myrating/$ratingId"; 
-    print("Okkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk" + urlRating);
+    print(urlRating);
     var request = http.Request('PUT', Uri.parse(urlRating));
     request.body = json.encode({
       "rating": username,
@@ -287,7 +440,7 @@ class _ModelePrestataireState extends State<ModelePrestataire> {
       return ratings;
     } else {
       // Gérez les erreurs ici, vous pouvez renvoyer une liste vide ou lancer une exception selon le cas
-      throw Exception('Erreur lors de la mise à jour du rating. updateRating()');
+      throw Exception('Erreur lors de la mise à jour du rating');
     }
   }
 
@@ -326,12 +479,110 @@ class _ModelePrestataireState extends State<ModelePrestataire> {
       throw Exception('Failed to fetch data from MongoDB');
     }
   } catch (error) {
-    
+    // Gérer les erreurs liées à la requête ici
+    // print('Error: $error');
+    // showDialog(
+    //   context: context,
+    //   builder: (BuildContext context) {
+    //     return AlertDialog(
+    //       title: const Text('Erreur'),
+    //       content: const Text('Une erreur est survenue lors de la connexion au serveur.'),
+    //       actions: [
+    //         TextButton(
+    //           child: const Text('OK'),
+    //           onPressed: () {
+    //             Navigator.of(context).pop();
+    //           },
+    //         ),
+    //       ],
+    //     );
+    //   },
+    // );
+
     // Renvoyer une liste vide en cas d'erreur
     return [];
   }
 }
 
+
+//   Future<List<Commentaire>> fetchData() async {
+//     setState(() {
+//       isLoading = true; // Afficher le chargement
+//     });
+
+//     final String apiUrl = 'https://ocean-52xt.onrender.com/comments/commentaires/${widget.id}';
+//     final Map<String, String> headers = {
+//       'Authorization':
+//           'Bearer ${UserData.token}',
+//     };
+
+//     final response = await http.get(Uri.parse(apiUrl), headers: headers);
+
+//     // final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/comments'));
+//     // final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/comments/commentaires/${widget.id}'));
+
+//     if (response.statusCode == 200) {
+//       final data = jsonDecode(response.body) as List<dynamic>;
+//       print("ouais tttttttttttttttttttttttttttttttttttt, ${data}");
+//       final fetchedCommentaires = data
+//         .map((item) => Commentaire(
+//               item['_id'] as String,
+//               item['comment'] as String,
+//               item['author'] as Map<String, dynamic>,
+              
+//             ))
+//         .toList();
+
+
+//       setState(() {
+//         isLoading = false; // Cacher le chargement
+//         commentaires = fetchedCommentaires;
+//         // print("ouaissssssssssss, ${commentaires}");
+//       });
+
+//       return fetchedCommentaires;
+//   } else {
+//     throw Exception('Failed to fetch data from MongoDB');
+//   }
+// } 
+
+// Future<double?> fetchRatingAverage() async {
+//   setState(() {
+//     isLoading = true; // Afficher le chargement
+//   });
+
+//   final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/rating/ratings/allusers/${widget.id}'));
+
+//   if (response.statusCode == 200) {
+//     final data = jsonDecode(response.body) as Map<String, dynamic>;
+//     print("average gggggggggggggggggggggggggggggggggggggg, ${data}");
+//     // var average = data['average'] as double;
+//     var average = (data['average'] as num).toDouble();
+//     print("aveeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee, ${average}");
+//     final prestataireData = data['prestataire'] as Map<String, dynamic>;
+
+//     // Utilisez prestataireData comme nécessaire, par exemple, pour accéder à 'nomprenom'
+//     // final nomPrenom = prestataireData['nomprenom'] as String;
+
+//     final fetchedRatingAverage = [
+//       Average(
+//         average,
+//         prestataireData,
+//       ),
+//     ];
+
+//     setState(() {
+//       isLoading = false; // Cacher le chargement
+//       averages = fetchedRatingAverage;
+//       average = fetchedRatingAverage[0].average; // Stocker la moyenne dans la variable d'état
+//       print("ouaissssssssssss zzzzzzzzzzzzzzzz, ${average}");
+//     });
+
+//     return average;
+//   } else {
+//     throw Exception('Failed to fetch data from MongoDB');
+//   }
+// }
 
 
 Future<double> fetchRatingAverage() async {
@@ -370,6 +621,174 @@ Future<double> fetchRatingAverage() async {
 }
 
 
+// Future<double> fetchRatingAverage() async {
+//   try {
+//     final String apiUrl = 'https://ocean-52xt.onrender.com/myrating/ratings/allusers/${widget.id}';
+//     final Map<String, String> headers = {
+//       // 'Authorization': 'Bearer ${UserData.token}',
+//     };
+
+//     final response = await http.get(Uri.parse(apiUrl), headers: headers);
+
+//     if (response.statusCode == 200) {
+//       final data = jsonDecode(response.body) as Map<String, dynamic>;
+
+//       // Vérifiez si 'average' existe et n'est pas null
+//       if (data.containsKey('average') && data['average'] != null) {
+//         // Convertissez la valeur en double
+//         var average = (data['average'] is String)
+//             ? double.parse(data['average'] as String)
+//             : (data['average'] as num).toDouble();
+
+//         // Retournez la valeur moyenne
+//         return average;
+//       } else {
+//         // Si 'average' est null, retournez une valeur par défaut de 0.0
+//         return 0.0;
+//       }
+//     } else {
+//       // En cas d'échec de la requête, vous pouvez lancer une exception ou retourner une valeur par défaut
+//       throw Exception('Failed to fetch data');
+//     }
+//   } catch (e) {
+//     // Gérez l'erreur et retournez une valeur par défaut
+//     print('Error: $e');
+//     return 0.0;
+//   }
+// }
+
+
+// Future<double> fetchRatingAverage() async {
+//   try {
+//     final String apiUrl = 'https://ocean-52xt.onrender.com/myrating/ratings/allusers/${widget.id}';
+//     final Map<String, String> headers = {
+//       // 'Authorization': 'Bearer ${UserData.token}',
+//     };
+
+//     final response = await http.get(Uri.parse(apiUrl), headers: headers);
+
+//     if (response.statusCode == 200) {
+//       final data = jsonDecode(response.body) as Map<String, dynamic>;
+
+//       // Vérifiez si 'average' existe et n'est pas null
+//       if (data.containsKey('average') && data['average'] != null) {
+//         // Convertissez la valeur en double
+//         var average = (data['average'] is int)
+//             ? (data['average'] as int).toDouble()
+//             : (data['average'] as num).toDouble();
+
+//         // Retournez la valeur moyenne
+//         return average;
+//       } else {
+//         // Si 'average' est null, retournez une valeur par défaut de 0.0
+//         return 0.0;
+//       }
+//     } else {
+//       // En cas d'échec de la requête, vous pouvez lancer une exception ou retourner une valeur par défaut
+//       throw Exception('Failed to fetch data');
+//     }
+//   } catch (e) {
+//     // Gérez l'erreur et retournez une valeur par défaut
+//     print('Error: $e');
+//     return 0.0;
+//   }
+// }
+
+
+// Future<double> fetchRatingAverage() async {
+//   try {
+//     final String apiUrl = 'https://ocean-52xt.onrender.com/myrating/ratings/allusers/${widget.id}';
+//     final Map<String, String> headers = {
+//       // 'Authorization': 'Bearer ${UserData.token}',
+//     };
+
+//     final response = await http.get(Uri.parse(apiUrl), headers: headers);
+
+//     if (response.statusCode == 200) {
+//       final data = jsonDecode(response.body) as Map<String, dynamic>;
+//       // var average = data['average'] as double;
+//       var average = (data['average'] as num).toDouble();
+
+
+//       // Check if average is null, and provide a default value of 0.0
+//       return average ?? 0.0;
+//     } else {
+//       // In case of a failed request, you can throw an exception or return a default value
+//       throw Exception('Failed to fetch data');
+//     }
+//   } catch (e) {
+//     // Handle the error and return a default value
+//     print('Error: $e');
+//     return 0.0;
+//   }
+// }
+
+
+// Future<double?> fetchRatingAverage() async {
+//   try {
+
+//     final String apiUrl = 'https://ocean-52xt.onrender.com/rating/ratings/allusers/${widget.id}';
+//     final Map<String, String> headers = {
+//       'Authorization':
+//           'Bearer ${UserData.token}',
+//     };
+
+//     final response = await http.get(Uri.parse(apiUrl), headers: headers);
+
+//     // final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/rating/ratings/allusers/${widget.id}'));
+
+//     if (response.statusCode == 200) {
+//       final data = jsonDecode(response.body) as Map<String, dynamic>;
+//       var average = data['average'] as double;
+
+//       return average;
+//     } else {
+//       // En cas d'échec de la requête, vous pouvez renvoyer null ou une valeur par défaut
+//       return null;
+//     }
+//   } catch (e) {
+//     // En cas d'erreur, vous pouvez renvoyer null ou une valeur par défaut
+//     return null;
+//   }
+// }
+
+
+
+//   Future<List<Average>> fetchRatingAverage() async {
+//     setState(() {
+//       isLoading = true; // Afficher le chargement
+//     });
+
+//     // final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/comments'));
+//     final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/rating/ratings/allusers/${widget.id}'));
+
+//     if (response.statusCode == 200) {
+//       final data = jsonDecode(response.body) as List<dynamic>;
+//       print("average gggggggggggggggggggggggggggggggggggggg, ${data}");
+//       final fetchedRatingAverage = data
+//         .map((item) => Average(
+//               // item['_id'] as String,
+//               item['average'] as String,
+//               item['prestataire'] as Map<String, dynamic>,
+              
+//             ))
+//         .toList();
+
+
+//       setState(() {
+//         isLoading = false; // Cacher le chargement
+//         averages = fetchedRatingAverage;
+//         // print("ouaissssssssssss, ${commentaires}");
+//       });
+
+//       return fetchedRatingAverage;
+//   } else {
+//     throw Exception('Failed to fetch data from MongoDB');
+//   }
+// } 
+
+
+
   void lancerAppel(String numero) async {
     String url = "tel:$numero";
     if (await canLaunch(url)) {
@@ -400,14 +819,10 @@ void _onItemTapped(int index) async {
                   print("postttttttttttttttttttttt");
                   await fetchData1(); // Attendre la fin de la requête POST
                   print("Attente de 2 secondes...");
-                  setState(() {
-                    fetchData();
-                  });
-                  // await Future.delayed(Duration(seconds: 5)); // Attendre 2 secondes
+                  await Future.delayed(Duration(seconds: 5)); // Attendre 2 secondes
                   print("gettttttttttttttttttttttttt");
                   await fetchData(); // Attendre la fin de la requête GET
                   Navigator.of(context).pop();
-                  setState(() {});
                 },
                 child: Text('Envoyer'),
               ),
@@ -793,6 +1208,51 @@ void _onItemTapped(int index) async {
 }
 
 
+// Widget _profile() {
+//   return Container(
+//     margin: const EdgeInsets.only(top: 5),
+//     child: Column(
+//       children: [
+//         GestureDetector(
+//           onTap: _pickImage,
+//           child: CircleAvatar(
+//             radius: 50,
+//             backgroundImage: _image != null ? FileImage(_image!) : null,
+//             child: _image == null
+//                 ? Image.asset(
+//                     "img/profile.png",
+//                     height: 100,
+//                     width: 100,
+//                     fit: BoxFit.cover,
+//                   )
+//                 : null,
+//           ),
+//         ),
+//         const SizedBox(height: 8,),
+//         Column(
+//           children: [
+//             Text('${widget.nomcommercial}', style: const TextStyle(color: Colors.white, fontSize: 20),),
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 Text('${widget.domaineactivite}', style: const TextStyle(color: Colors.white, fontSize: 20),),
+//                 // SizedBox(width: MediaQuery.sizeOf(context).width * 0.05,),
+//                 // SizedBox(width: 10,),
+//                 // Utilisation du nouveau widget pour afficher la moyenne
+//                 Padding(
+//                   padding: const EdgeInsets.only(left: 80.0),
+//                   child: _buildAverageWidget(),
+//                 ),
+//               ],
+//             ),
+//             const SizedBox(height: 5,),
+//           ],
+//         ),
+//         const SizedBox(height: 8,),
+//       ],
+//     ),
+//   );
+// }
 
 Widget _buildAverageWidget() {
   return FutureBuilder<double?>(
@@ -817,6 +1277,111 @@ Widget _buildAverageWidget() {
     },
   );
 }
+
+
+//  Widget _profile() {
+//     return FutureBuilder<double?>(
+//       future: fetchRatingAverage(),
+//       builder: (context, snapshot) {
+//         if (snapshot.connectionState == ConnectionState.waiting) {
+//           // Afficher un indicateur de chargement si les données ne sont pas encore disponibles
+//           return CircularProgressIndicator();
+//         } else if (snapshot.hasError) {
+//           // Gérer les erreurs de récupération des données
+//           return Text("Erreur: ${snapshot.error}");
+//         } else {
+//           // Les données ont été récupérées avec succès
+//           return Container(
+//             margin: const EdgeInsets.only(top: 5),
+//             child: Column(
+//               children: [
+//                 GestureDetector(
+//                   onTap: _pickImage,
+//                   child: CircleAvatar(
+//                     radius: 50,
+//                     backgroundImage: _image != null ? FileImage(_image!) : null,
+//                     child: _image == null
+//                         ? Image.asset(
+//                             "img/profile.png",
+//                             height: 100,
+//                             width: 100,
+//                             fit: BoxFit.cover,
+//                           )
+//                         : null,
+//                   ),
+//                 ),
+//                 const SizedBox(height: 8,),
+//                 Column(
+//                   children: [
+//                     Text('${widget.nomcommercial}', style: const TextStyle(color: Colors.white, fontSize: 20),),
+//                     Row(
+//                       children: [
+//                         Text('${widget.domaineactivite}', style: const TextStyle(color: Colors.white, fontSize: 20),),
+//                         if (snapshot.data != null)
+//                           Text(
+//                             'Moyenne : ${snapshot.data}',
+//                             style: TextStyle(fontSize: 18),
+//                           ),
+//                       ],
+//                     ),
+//                     const SizedBox(height: 5,),
+//                   ],
+//                 ),
+//                 const SizedBox(height: 8,),
+//               ],
+//             ),
+//           );
+//         }
+//       },
+//     );
+//   }
+// }
+
+
+  // Widget _profile() {
+  //   return Container(
+  //     margin: const EdgeInsets.only(top: 5),
+  //     child: Column(
+  //       children: [
+  //         GestureDetector(
+  //           onTap: _pickImage,
+  //           child: CircleAvatar(
+  //             radius: 50,
+  //             backgroundImage: _image != null ? FileImage(_image!) : null,
+  //             child: _image == null
+  //                 ? Image.asset(
+  //                     "img/profile.png",
+  //                     height: 100,
+  //                     width: 100,
+  //                     fit: BoxFit.cover,
+  //                   )
+  //                 : null,
+  //           ),
+  //         ),
+  //         const SizedBox(height: 8,),
+  //         Column(
+  //           children: [
+  //             Text('${widget.nomcommercial}', style: const TextStyle(color: Colors.white, fontSize: 20),),
+  //             Row(
+  //               mainAxisAlignment: MainAxisAlignment.center,
+  //               children: [
+  //                 Text('${widget.domaineactivite}', style: const TextStyle(color: Colors.white, fontSize: 20),),
+  //                 // if (average != null) // Ajoutez cette condition
+  //                   Text(
+  //                     'Moyenne : $average',
+  //                     style: TextStyle(fontSize: 18, color: Colors.white),
+  //                   ),
+  //               ],
+  //             ),
+  //             const SizedBox(height: 5,),
+  //             // Text('Rating: $_rating'),
+  //           ],
+  //         ),
+  //         const SizedBox(height: 8,),
+  //       ],
+  //     ),
+  //   );
+  // }
 
 
   Widget _comment() {

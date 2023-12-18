@@ -101,6 +101,40 @@ class _AccueilState extends State<Accueil> {
 
   // ::::
   List<Metier> metiers = [];
+  // bool isLoading = true;
+
+//     Future<List<PrestatairesAverage>> fetchPrestatairesAverage() async {
+//     setState(() {
+//       isLoading = true; // Afficher le chargement
+//     });
+
+//     final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/rating/ratings/superieur/egale/quatre'));
+
+//     if (response.statusCode == 200) {
+//       final data = jsonDecode(response.body) as List<dynamic>;
+//       print("ouais tttttttttttttttttttttttttttttttttttt, ${data}");
+//       final fetchedPrestatairesAverage = data
+//         .map((item) => PrestatairesAverage(
+//               item['_id'] as String,
+//               // item['averageRating'] as double,
+//               (item['averageRating'] as num).toDouble(), // Convertir en double
+//               item['prestataire_info'] as Map<String, dynamic>
+              
+//             ))
+//         .toList();
+
+
+//       setState(() {
+//         isLoading = false; // Cacher le chargement
+//         prestatairesAverages = fetchedPrestatairesAverage;
+//         // print("ouaissssssssssss, ${commentaires}");
+//       });
+
+//       return fetchedPrestatairesAverage;
+//   } else {
+//     throw Exception('Failed to fetch data from MongoDB');
+//   }
+// } 
 
   Future<List<PrestatairesAverage>> fetchPrestatairesAverage() async {
     setState(() {
@@ -112,7 +146,7 @@ class _AccueilState extends State<Accueil> {
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      final apiUrl = 'https://ocean-52xt.onrender.com/myrating/ratings/superieur/egale/quatre';
+      final apiUrl = 'https://ocean-52xt.onrender.com/rating/ratings/superieur/egale/quatre';
       final response = await http.get(Uri.parse(apiUrl));
 
       if (response.statusCode == 200) {
@@ -132,7 +166,7 @@ class _AccueilState extends State<Accueil> {
 
         return fetchedPrestatairesAverage;
       } else {
-        print('Erreur lors de la récupération des données. fetchPrestatairesAverage(). Code : ${response.statusCode}');
+        print('Erreur lors de la récupération des données. Code : ${response.statusCode}');
         // Ajoutez ici la logique pour informer l'utilisateur de l'erreur ou effectuer d'autres actions nécessaires.
 
         // Renvoyer une liste vide en cas d'erreur
@@ -147,6 +181,141 @@ class _AccueilState extends State<Accueil> {
     }
   }
 
+
+//   Future<List<PrestatairesAverage>> fetchPrestatairesAverage() async {
+//   setState(() {
+//     isLoading = true; // Afficher le chargement
+//   });
+
+//   try {
+//     final position = await Geolocator.getCurrentPosition(
+//       desiredAccuracy: LocationAccuracy.high,
+//     );
+
+//     final apiUrl = 'https://ocean-52xt.onrender.com/rating/ratings/superieur/egale/quatre';
+//     final response = await http.get(Uri.parse(apiUrl));
+
+//     if (response.statusCode == 200) {
+//       final data = jsonDecode(response.body) as List<dynamic>;
+//       final fetchedPrestatairesAverage = data
+//           .map((item) => PrestatairesAverage(
+//                 item['_id'] as String,
+//                 (item['averageRating'] as num).toDouble(),
+//                 item['prestataire_info'] as Map<String, dynamic>,
+//               ))
+//           .toList();
+
+//       setState(() {
+//         isLoading = false; // Cacher le chargement
+//         prestatairesAverages = fetchedPrestatairesAverage;
+//       });
+
+//       return fetchedPrestatairesAverage;
+//     } else {
+//       print('Erreur lors de la récupération des données');
+//       throw Exception('Erreur lors de la récupération des données');
+//     }
+//   } catch (error) {
+//     print('Erreur lors de la requête HTTP : $error');
+
+//     // Renvoyer une liste vide en cas d'erreur
+//     return [];
+//   }
+// }
+
+
+// Future<List<PrestatairesAverage>> fetchPrestatairesAverage() async {
+//   setState(() {
+//     isLoading = true; // Afficher le chargement
+//   });
+
+//   try {
+//     final position = await Geolocator.getCurrentPosition(
+//       desiredAccuracy: LocationAccuracy.high,
+//     );
+
+//     final apiUrl = 'https://ocean-52xt.onrender.com/rating/ratings/superieur/egale/quatre';
+//     final response = await http.get(Uri.parse(apiUrl));
+
+//     if (response.statusCode == 200) {
+//       final data = jsonDecode(response.body) as List<dynamic>;
+//       final fetchedPrestatairesAverage = data
+//           .map((item) => PrestatairesAverage(
+//                 item['_id'] as String,
+//                 (item['averageRating'] as num).toDouble(),
+//                 item['prestataire_info'] as Map<String, dynamic>,
+//               ))
+//           .toList();
+
+//       setState(() {
+//         isLoading = false; // Cacher le chargement
+//         prestatairesAverages = fetchedPrestatairesAverage;
+//       });
+
+//       return fetchedPrestatairesAverage;
+//     } else {
+//       print('Erreur lors de la récupération des données');
+//       throw Exception('Erreur lors de la récupération des données');
+//     }
+//   } catch (error) {
+//     print('Erreur lors de la requête HTTP : $error');
+//     throw Exception('Erreur lors de la requête HTTP : $error');
+//   }
+// }
+
+
+// Future<List<PrestatairesAverage>> fetchPrestatairesAverage() async {
+//     setState(() {
+//       isLoading = true; // Afficher le chargement
+//     });
+
+//     try {
+//       final position = await Geolocator.getCurrentPosition(
+//         desiredAccuracy: LocationAccuracy.high,
+//       );
+
+//       final apiUrl = 'https://ocean-52xt.onrender.com/rating/ratings/superieur/egale/quatre';
+//       // final apiUrl = 'https://ocean-52xt.onrender.com/rating/ratings/superieur/egale/quatre?lat=${position.latitude}&lng=${position.longitude}';
+//       print("Je veux voir l'url rechercher .......................... : ${apiUrl}");
+//       final response = await http.get(Uri.parse(apiUrl));
+
+//       if (response.statusCode == 200) {
+//         final data = jsonDecode(response.body) as List<dynamic>;
+//         print("Voici les résultats obtenus ::::::::::::::::::::::::::::::::::::::::::::::: ${data}");
+//         final fetchedPrestatairesAverage = data
+//           .map((item) => PrestatairesAverage(
+//               item['_id'] as String,
+//               (item['averageRating'] as num).toDouble(), // Convertir en double
+//               item['prestataire_info'] as Map<String, dynamic>
+//                 // item['_id'] as String,
+//                 // item['nomprenom'] as String,
+//                 // item['email'] as String,
+//                 // item['downloadUrl'] != null ? item['downloadUrl'] as String : "",
+//                 // item['prestataire'] as bool,
+//                 // item['username'] as String,
+//                 // item['location'] as Map<String, dynamic>,
+//                 // item['domaineactivite'] as String,
+//                 // // item['distance'] as int,
+//                 // item['distance'] != null ? item['distance'] as int : 0,
+//                 // item['nomcommercial'] as String,
+//                 // item['numero'] as int,
+//                 // item['rating'] as int,
+//               ))
+//           .toList();
+
+//         setState(() {
+//           isLoading = false; // Cacher le chargement
+//           prestatairesAverages = fetchedPrestatairesAverage;
+//         });
+
+//         return fetchedPrestatairesAverage;
+//       } else {
+//         print('Erreur lors de la récupération des données');
+//       }
+//     } catch (error) {
+//       print('Erreur lors de la requête HTTP : $error');
+//     }
+//   } 
 
 Future<List<Metier>> fetchData() async {
   try {
@@ -197,6 +366,73 @@ Future<List<Metier>> fetchData() async {
 }
 
 
+//   Future<List<Metier>> fetchData() async {
+//   try {
+//     setState(() {
+//       isLoading = true; // Afficher le chargement
+//     });
+
+//     final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/domaineActivite'));
+
+//     if (response.statusCode == 200) {
+//       final data = jsonDecode(response.body) as List<dynamic>;
+//       final fetchedmetiers = data
+//           .map((item) => Metier(
+//                 item['_id'] as String,
+//                 item['domaineactivite'] as String,
+//               ))
+//           .toList();
+
+//       setState(() {
+//         isLoading = false; // Cacher le chargement
+//         metiers = fetchedmetiers;
+//       });
+
+//       return fetchedmetiers;
+//     } else {
+//       throw Exception('Failed to fetch data from MongoDB');
+//     }
+//   } catch (error) {
+//     print('Error fetching data: $error');
+//     setState(() {
+//       isLoading = false; // Cacher le chargement en cas d'erreur
+//     });
+//     return []; // Retourner une liste vide en cas d'erreur
+//   }
+// }
+
+
+  // Future<List<Metier>> fetchData() async {
+  //   setState(() {
+  //     isLoading = true; // Afficher le chargement
+  //   });
+
+  //   final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/domaineActivite'));
+
+  //   if (response.statusCode == 200) {
+  //     final data = jsonDecode(response.body) as List<dynamic>;
+  //     final fetchedmetiers = data
+  //       .map((item) => Metier(
+  //             item['_id'] as String,
+  //             item['domaineactivite'] as String,
+              
+  //           ))
+  //       .toList();
+
+
+  //     setState(() {
+  //       isLoading = false; // Cacher le chargement
+  //       metiers = fetchedmetiers;
+  //     });
+
+  //     return fetchedmetiers;
+  //   } else {
+  //     throw Exception('Failed to fetch data from MongoDB');
+  //   }
+  // }
+
+
+  // ::::::::::
 
     Future<void> fetchPrestataires(String type) async {
     setState(() {
@@ -242,7 +478,7 @@ Future<List<Metier>> fetchData() async {
 
         return;
       } else {
-        print('Erreur lors de la récupération des données fetchPrestataires(String type). Code : ${response.statusCode}');
+        print('Erreur lors de la récupération des données. Code : ${response.statusCode}');
         // Ajoutez ici la logique pour informer l'utilisateur de l'erreur ou effectuer d'autres actions nécessaires.
       }
     } catch (error) {
@@ -250,6 +486,55 @@ Future<List<Metier>> fetchData() async {
       // Ajoutez ici la logique pour informer l'utilisateur de l'erreur ou effectuer d'autres actions nécessaires.
     }
   }
+
+  // Future<void> fetchPrestataires(String type) async {
+  //   setState(() {
+  //     isLoading = true; // Afficher le chargement
+  //   });
+
+  //   try {
+  //     final position = await Geolocator.getCurrentPosition(
+  //       desiredAccuracy: LocationAccuracy.high,
+  //     );
+
+  //     final apiUrl = 'https://ocean-52xt.onrender.com/users/prestataires/$type?lat=${position.latitude}&lng=${position.longitude}';
+  //     print("Je veux voir l'url.......................... : ${apiUrl}");
+  //     final response = await http.get(Uri.parse(apiUrl));
+
+  //     if (response.statusCode == 200) {
+  //       final data = jsonDecode(response.body) as List<dynamic>;
+  //       print("Voici les résultats obtenus ::::::::::::::::::::::::::::::::::::::::::::::: ${data}");
+  //       final fetchedPrestataires = data
+  //         .map((item) => Prestataire(
+  //               item['_id'] as String,
+  //               item['nomprenom'] as String,
+  //               item['email'] as String,
+  //               item['downloadUrl'] != null ? item['downloadUrl'] as String : "",
+  //               item['prestataire'] as bool,
+  //               item['username'] as String,
+  //               item['location'] as Map<String, dynamic>,
+  //               item['domaineactivite'] as String,
+  //               item['distance'] as int,
+  //               item['nomcommercial'] as String,
+  //               item['numero'] as int,
+  //               item['photoProfil'] as String,
+  //               // item['rating'] as int,
+  //             ))
+  //         .toList();
+
+  //       setState(() {
+  //         isLoading = false; // Cacher le chargement
+  //         prestataires = fetchedPrestataires;
+  //       });
+
+  //       return;
+  //     } else {
+  //       print('Erreur lors de la récupération des données');
+  //     }
+  //   } catch (error) {
+  //     print('Erreur lors de la requête HTTP : $error');
+  //   }
+  // }
 
 
   Future<List<Publicites>> fetchPublicites() async {
@@ -271,7 +556,7 @@ Future<List<Metier>> fetchData() async {
 
         return fetchedPublicites;
       } else {
-        print('Erreur lors de la récupération des données. fetchPublicites()');
+        print('Erreur lors de la récupération des données');
         return [];
       }
     } catch (error) {
@@ -379,11 +664,31 @@ Future<List<Metier>> fetchData() async {
             },
           ),
           const SizedBox(height: 50,),
+          // const Text("Nous vous offrons simplement et rapidement des préstataire dans votre zone", style: TextStyle(fontSize: 20),),
+          // const SizedBox(height: 50,),
+          // const Text("Océan vous offre différents types de prestataires, tels que des électriciens, des garagistes, des plombiers, des mécaniciens, des coiffeurs et des coiffeuses...", style: TextStyle(fontSize: 20),),
           const SizedBox(child: Text("Recommandations", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),)),
           // const SizedBox(height: 20,),
           Expanded(
             child: _alternateContent1(),
-            
+            // child: Center(child: Text("Il n'y a pas de prestataire à vous recommander pour le moment. On vous conseil de faire la recherche de votre prestataire.", textAlign: TextAlign.center, style: TextStyle(fontSize: 18),)),
+            // child: GridView.count(
+            //   crossAxisCount: 2,
+            //   children: List.generate(100, (index) {
+            //     return Center(
+            //       child: Container(
+            //         decoration: const BoxDecoration(color: Colors.grey),
+            //         child: Padding(
+            //           padding: const EdgeInsets.all(52.0),
+            //           child: Text(
+            //             'Item $index',
+            //             // style: Theme.of(context).textTheme.headline5,
+            //           ),
+            //         ),
+            //       ),
+            //     );
+            //   }),
+            // ),
           ),
         ],
       ),
@@ -543,6 +848,27 @@ Future<List<Metier>> fetchData() async {
                                               Expanded(child: Text(prestataire.nomprenom)),
                                               const Expanded(child: Text("")),
                                               Expanded(child: Text("${prestataire.domaineactivite}")),
+
+                                              // Expanded(
+                                              //   child: ElevatedButton(
+                                              //     onPressed: () {
+                                              //       // Naviguer vers la page de la carte en passant les coordonnées du prestataire
+                                              //       final coordinates = prestataire.location['coordinates'];
+                                              //       final latitude = coordinates[1]; // Latitude
+                                              //       final longitude = coordinates[0]; // Longitude
+                                              
+                                              //       Navigator.of(context).push(
+                                              //         MaterialPageRoute(
+                                              //           builder: (context) => CartePageMap(
+                                              //             latitude: latitude,
+                                              //             longitude: longitude,
+                                              //           ),
+                                              //         ),
+                                              //       );
+                                              //     },
+                                              //     child: const Icon(Icons.map),
+                                              //   ),
+                                              // )
                                             ],
                                           )
                                         ],
@@ -610,6 +936,33 @@ Future<List<Metier>> fetchData() async {
           ],
       );
 }
+
+    //   Widget _widgetImage(imageUrl) {
+    // Color color = const Color(0xFFD9D9D9);
+    // return Padding(
+    //   padding: const EdgeInsets.only(right: 15),
+    //   child: Container(
+    //     height: 100,
+    //     width: MediaQuery.of(context).size.width * 0.350,
+    //     decoration: BoxDecoration(
+    //       borderRadius: BorderRadius.circular(12),
+    //       color: color, 
+    //     ),
+    //     child: CachedNetworkImage(
+    //       imageUrl: imageUrl ?? '',
+    //       placeholder: (context, url) => const CircularProgressIndicator(),
+    //       errorWidget: (context, url, error) => const Icon(Icons.error),
+    //       height: 100,
+    //       width: MediaQuery.of(context).size.width * 0.350,
+    //       fit: BoxFit.cover,
+    //     ),
+    //   ),
+    // );
+    // }
+
+
+  
+
 
     Widget _alternateContent() {
       if (selectedElementIndex < 0 || selectedElementIndex >= metiers.length) {
@@ -760,6 +1113,8 @@ Future<List<Metier>> fetchData() async {
                                             Expanded(
                                               child: Row(
                                                 children: [
+                                                  // const Icon(Icons.location_on_outlined),
+                                                  // const SizedBox(width: 3,),
                                                   Text(prestataire.username)
                                                 ],
                                               ),
@@ -771,6 +1126,9 @@ Future<List<Metier>> fetchData() async {
                                             Expanded(
                                               child: Row(
                                                 children: [
+                                                  // const Icon(Icons.contact_phone_outlined),
+                                                  // const SizedBox(width: 3,),
+                                                  // Text("0585649579")
                                                   Text("${prestataire.nomcommercial}"), 
                                                   // Text("${prestataire.numero.toString()}"), 
                                                 ],
@@ -809,6 +1167,12 @@ Future<List<Metier>> fetchData() async {
           ],
       );
 }
+
+
+
+
+// https://ocean-52xt.onrender.com/users/prestatairesNom/Tob
+
 
 
   Widget _vsearch() {
@@ -853,4 +1217,196 @@ Future<List<Metier>> fetchData() async {
       ),
     );
   }
+
+  // void _performSearch(BuildContext context, String searchTerm) {
+  //   // Effectuez la recherche ici en utilisant le terme de recherche (searchTerm)
+  //   // Appelez l'API avec le terme de recherche et affichez les résultats dans une autre interface utilisateur
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => ResultatRecherche(),
+  //     ),
+  //   );
+  // }
+
+
+
+
+// Widget _vsearch() {
+//     return Container(
+//       margin: const EdgeInsets.all(15),
+//       child: CupertinoTextField(
+//         padding: const EdgeInsets.all(13),
+//         prefix: const Padding(
+//           padding: EdgeInsets.only(left: 15.0),
+//           child: Icon(Icons.search),
+//         ),
+//         placeholder: "Rechercher un prestataire",
+//         decoration: BoxDecoration(
+//           border: Border.all(color: Colors.greenAccent),
+//           borderRadius: BorderRadius.circular(5),
+//           color: Colors.white,
+//         ),
+//       ),
+//     );
+//   }
+
 }
+
+
+
+
+
+  //   Widget _ratingBar() {
+  //     return RatingBar.builder(
+  //           initialRating: _initialRating,
+  //           direction: _isVertical ? Axis.vertical : Axis.horizontal,
+  //           itemCount: 5,
+  //           itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+  //           itemBuilder: (context, index) {
+  //             switch (index) {
+  //               case 0:
+  //                 return Icon(
+  //                   Icons.sentiment_very_dissatisfied,
+  //                   color: Colors.red,
+  //                   size: 2,
+  //                 );
+  //               case 1:
+  //                 return Icon(
+  //                   Icons.sentiment_dissatisfied,
+  //                   color: Colors.redAccent,
+  //                 );
+  //               case 2:
+  //                 return Icon(
+  //                   Icons.sentiment_neutral,
+  //                   color: Colors.amber,
+  //                 );
+  //               case 3:
+  //                 return Icon(
+  //                   Icons.sentiment_satisfied,
+  //                   color: Colors.lightGreen,
+  //                 );
+  //               case 4:
+  //                 return Icon(
+  //                   Icons.sentiment_very_satisfied,
+  //                   color: Colors.green,
+  //                 );
+  //               default:
+  //                 return Container();
+  //             }
+  //           },
+  //           onRatingUpdate: (rating) {
+  //             setState(() {
+  //               _rating = rating;
+  //             });
+  //           },
+  //           updateOnDrag: true,
+  //         );
+  // }
+
+  
+
+  //   Widget _ratingBar() {
+  //   switch (mode) {
+  //     case 1:
+  //       return RatingBar.builder(
+  //         initialRating: _initialRating,
+  //         minRating: 1,
+  //         direction: _isVertical ? Axis.vertical : Axis.horizontal,
+  //         allowHalfRating: true,
+  //         unratedColor: Colors.amber.withAlpha(50),
+  //         itemCount: 5,
+  //         itemSize: 50.0,
+  //         itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+  //         itemBuilder: (context, _) => Icon(
+  //           _selectedIcon ?? Icons.star,
+  //           color: Colors.amber,
+  //         ),
+  //         onRatingUpdate: (rating) {
+  //           setState(() {
+  //             _rating = rating;
+  //           });
+  //         },
+  //         updateOnDrag: true,
+  //       );
+  //     case 2:
+  //       return RatingBar(
+  //         initialRating: _initialRating,
+  //         direction: _isVertical ? Axis.vertical : Axis.horizontal,
+  //         allowHalfRating: true,
+  //         itemCount: 5,
+  //         ratingWidget: RatingWidget(
+  //           full: _image('assets/heart.png'),
+  //           half: _image('assets/heart_half.png'),
+  //           empty: _image('assets/heart_border.png'),
+  //         ),
+  //         itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+  //         onRatingUpdate: (rating) {
+  //           setState(() {
+  //             _rating = rating;
+  //           });
+  //         },
+  //         updateOnDrag: true,
+  //       );
+  //     case 3:
+  //       return RatingBar.builder(
+  //         initialRating: _initialRating,
+  //         direction: _isVertical ? Axis.vertical : Axis.horizontal,
+  //         itemCount: 5,
+  //         itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+  //         itemBuilder: (context, index) {
+  //           switch (index) {
+  //             case 0:
+  //               return Icon(
+  //                 Icons.sentiment_very_dissatisfied,
+  //                 color: Colors.red,
+  //               );
+  //             case 1:
+  //               return Icon(
+  //                 Icons.sentiment_dissatisfied,
+  //                 color: Colors.redAccent,
+  //               );
+  //             case 2:
+  //               return Icon(
+  //                 Icons.sentiment_neutral,
+  //                 color: Colors.amber,
+  //               );
+  //             case 3:
+  //               return Icon(
+  //                 Icons.sentiment_satisfied,
+  //                 color: Colors.lightGreen,
+  //               );
+  //             case 4:
+  //               return Icon(
+  //                 Icons.sentiment_very_satisfied,
+  //                 color: Colors.green,
+  //               );
+  //             default:
+  //               return Container();
+  //           }
+  //         },
+  //         onRatingUpdate: (rating) {
+  //           setState(() {
+  //             _rating = rating;
+  //           });
+  //         },
+  //         updateOnDrag: true,
+  //       );
+  //     default:
+  //       return Container();
+  //   }
+  // }
+
+  // Widget _image(String asset) {
+  //   return Image.asset(
+  //     asset,
+  //     height: 30.0,
+  //     width: 30.0,
+  //     color: Colors.amber,
+  //   );
+  // }
+
+
+
+  // Il n'y a pas de prestataire à vous recommander. Vous pouvez faire la recherche au niveau des menus ou dans la
+  //barre de recherche en mettant le nom du prestataire

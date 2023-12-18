@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart'; 
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ocean/pages/qrcodeView.dart';
 import 'package:file_picker/file_picker.dart';
@@ -12,6 +13,8 @@ import 'package:http_parser/http_parser.dart';
 
 
 bool connecte = false;
+  bool isLoading = false;
+
 
 class Publicite extends StatefulWidget {
   const Publicite({super.key});
@@ -39,6 +42,10 @@ class _PubliciteState extends State<Publicite> {
       ));
     }
 
+    setState(() {
+      isLoading = true;
+    });
+
     try {
         var response = await request.send();
 
@@ -59,6 +66,10 @@ class _PubliciteState extends State<Publicite> {
       print('Erreur : $error');
       // Votre traitement en cas d'erreur
     }
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
 
@@ -66,93 +77,115 @@ class _PubliciteState extends State<Publicite> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          width: MediaQuery.sizeOf(context).width,
-          height: MediaQuery.sizeOf(context).height,
-          decoration: BoxDecoration(
-              color: Colors.grey,
-              border: Border.all(color: Colors.grey, width: 1.5),
-              image: const DecorationImage(image: AssetImage('img/background.jpg'), fit: BoxFit.cover) // Changed Image.asset to AssetImage
-            ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: Stack(
+        alignment: Alignment.center,
+        children: [
+          SingleChildScrollView(
+            child: Container(
+              width: MediaQuery.sizeOf(context).width,
+              height: MediaQuery.sizeOf(context).height,
+              decoration: BoxDecoration(
+                  color: Colors.grey,
+                  border: Border.all(color: Colors.grey, width: 1.5),
+                  image: const DecorationImage(image: AssetImage('img/background.jpg'), fit: BoxFit.cover) // Changed Image.asset to AssetImage
+                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 38),
-                    child: Center(child: Image.asset("img/logo.png", 
-                      // height: MediaQuery.sizeOf(context).height*0.30, 
-                      width: MediaQuery.sizeOf(context).width*0.50,
-                    ),),
-                  ),
-                  SizedBox(height: MediaQuery.sizeOf(context).height*0.030,),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      IconButton(
-                          onPressed: () {
-                            // Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //         builder: (context) => const Enregistrement()));
-                            Navigator.pushReplacementNamed(context, '/enregistrement');
-                          },
-                          icon: const Icon(Icons.bolt_outlined), color: Colors.yellowAccent,),
-            
+                      Padding(
+                        padding: const EdgeInsets.only(top: 38),
+                        child: Center(child: Image.asset("img/logo.png", 
+                          // height: MediaQuery.sizeOf(context).height*0.30, 
+                          width: MediaQuery.sizeOf(context).width*0.50,
+                        ),),
+                      ),
+                      SizedBox(height: MediaQuery.sizeOf(context).height*0.030,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                              onPressed: () {
+                                // Navigator.push(
+                                //     context,
+                                //     MaterialPageRoute(
+                                //         builder: (context) => const Enregistrement()));
+                                Navigator.pushReplacementNamed(context, '/enregistrement');
+                              },
+                              icon: const Icon(Icons.bolt_outlined), color: Colors.yellowAccent,),
+                
+                        ],
+                      ),
                     ],
                   ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _documentFournir(),
+                      _vdocumentFournir(),
+                      // _connect()
+                    ],
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: 180,
+                        decoration: BoxDecoration(
+                          // color: Colors.blue,
+                          border: Border.all(style: BorderStyle.solid, color: Colors.white),
+                          borderRadius: const BorderRadius.all(Radius.circular(0.1))
+                        ),
+                        child: TextButton(
+                        onPressed: isLoading ? null : () => enregistrerUtilisateur(),
+                          
+                        //   onPressed: (){
+                        //   enregistrerUtilisateur();
+                        // }, 
+                        
+                        child: Text(
+                          'Publier',
+                          style: GoogleFonts.acme(
+                            fontSize: 20.0,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                      )))),  
+                      SizedBox(height: MediaQuery.sizeOf(context).height*0.030,),
+                      // TextButton(onPressed: (){},
+                      //   child: Text(
+                      //     "Conditions générales d'utilisation",
+                      //     style: GoogleFonts.acme(
+                      //       color: Colors.white,
+                      //       fontSize: 14,
+                      //       fontWeight: FontWeight.bold,
+                      //     ),
+                      //   ),)
+                        
+                    ],
+                  )   
                 ],
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _documentFournir(),
-                  _vdocumentFournir(),
-                  // _connect()
-                ],
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    width: 180,
-                    decoration: BoxDecoration(
-                      // color: Colors.blue,
-                      border: Border.all(style: BorderStyle.solid, color: Colors.white),
-                      borderRadius: const BorderRadius.all(Radius.circular(0.1))
-                    ),
-                    child: TextButton(onPressed: (){
-                      enregistrerUtilisateur();
-                    }, child: Text(
-                      'Publier',
-                      style: GoogleFonts.acme(
-                        fontSize: 20.0,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                  )))),  
-                  SizedBox(height: MediaQuery.sizeOf(context).height*0.030,),
-                  // TextButton(onPressed: (){},
-                  //   child: Text(
-                  //     "Conditions générales d'utilisation",
-                  //     style: GoogleFonts.acme(
-                  //       color: Colors.white,
-                  //       fontSize: 14,
-                  //       fontWeight: FontWeight.bold,
-                  //     ),
-                  //   ),)
-                    
-                ],
-              )   
-            ],
+            ),
           ),
-        ),
+          if (isLoading)
+          Positioned(
+            child: _spinner(),
+          ),
+        ],
       ),
     );
   }
 
+
+  Widget _spinner() {
+    return const SpinKitFadingCircle(
+      color: Colors.white,
+      duration: Duration(milliseconds: 1200),
+      size: 100.0,
+    );
+  }
 
   Widget _documentFournir() {
     return Container(
