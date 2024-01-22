@@ -1,23 +1,40 @@
 // ignore_for_file: unnecessary_string_interpolations, avoid_print, constant_identifier_names, unnecessary_brace_in_string_interps, prefer_const_declarations
 
 import 'dart:convert';
+import 'dart:typed_data';
 // import 'dart:ffi';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+// import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:ocean/Card/cardPrestatairesAverage.dart';
+// import 'package:ocean/Card/cardPrestatairesAverage.dart';
 import 'package:ocean/authentification/connexion.dart';
 import 'package:ocean/authentification/user_data.dart';
 import 'package:ocean/modeles/modelePrestataire.dart';
 import 'package:ocean/pages/carte_page_map.dart';
-import 'package:ocean/pages/resultatRecherche.dart';
+// import 'package:ocean/pages/resultatRecherche.dart';
 import 'package:ocean/pages/searchePage.dart';
 
+
+
+// Image decodeBase64ToImage(String base64String) {
+//   Uint8List bytes = base64.decode(base64String);
+//   return Image.memory(bytes);
+// }
+
+Image? decodeBase64ToImage(String base64String) {
+  try {
+    Uint8List bytes = base64.decode(base64String);
+    return Image.memory(bytes);
+  } catch (e) {
+    print('Erreur lors du décodage de l\'image : $e');
+    return null;
+  }
+}
 
 class Metier {
   final String id;
@@ -353,28 +370,49 @@ Future<List<Metier>> fetchData() async {
                 return CarouselSlider.builder(
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index, realIndex) {
-                    final imageUrl = snapshot.data![index].imagepublier;
+                    final base64Image = snapshot.data![index].imagepublier;
+                    final imageWidget = decodeBase64ToImage(base64Image!);
+
                     return Container(
                       margin: const EdgeInsets.only(top: 15),
                       height: MediaQuery.of(context).size.height * 0.23,
                       width: MediaQuery.of(context).size.width * 0.90,
                       decoration: const BoxDecoration(color: Colors.grey),
-                      child: CachedNetworkImage(
-                        imageUrl: imageUrl!,
-                        placeholder: (context, imageUrl) =>
-                            const CircularProgressIndicator(),
-                        errorWidget: (context, imageUrl, error) =>
-                            const Icon(Icons.error),
-                        fit: BoxFit.cover,
-                      ),
+                      child: imageWidget,
                     );
                   },
                   options: CarouselOptions(
                     autoPlay: true,
-                    aspectRatio: 16 / 9, // Ajustez la proportion comme nécessaire
-                    viewportFraction: 0.9, // Ajustez la fraction de l'écran visible comme nécessaire
+                    aspectRatio: 16 / 9,
+                    viewportFraction: 0.9,
                   ),
                 );
+
+                // return CarouselSlider.builder(
+                //   itemCount: snapshot.data!.length,
+                //   itemBuilder: (context, index, realIndex) {
+                //     final imageUrl = snapshot.data![index].imagepublier;
+                //     return Container(
+                //       margin: const EdgeInsets.only(top: 15),
+                //       height: MediaQuery.of(context).size.height * 0.23,
+                //       width: MediaQuery.of(context).size.width * 0.90,
+                //       decoration: const BoxDecoration(color: Colors.grey),
+                //       child: CachedNetworkImage(
+                //         imageUrl: imageUrl!,
+                //         placeholder: (context, imageUrl) =>
+                //             const CircularProgressIndicator(),
+                //         errorWidget: (context, imageUrl, error) =>
+                //             const Icon(Icons.error),
+                //         fit: BoxFit.cover,
+                //       ),
+                //     );
+                //   },
+                //   options: CarouselOptions(
+                //     autoPlay: true,
+                //     aspectRatio: 16 / 9, // Ajustez la proportion comme nécessaire
+                //     viewportFraction: 0.9, // Ajustez la fraction de l'écran visible comme nécessaire
+                //   ),
+                // );
               }
             },
           ),
@@ -522,7 +560,8 @@ Future<List<Metier>> fetchData() async {
                                     // color: color, 
                                   ),
                                   child: CachedNetworkImage(
-                                    imageUrl: prestataire.photoProfil ?? '',
+                                    imageUrl: prestataire.photoProfil,
+                                    // imageUrl: prestataire.photoProfil ?? '',
                                     placeholder: (context, url) => const CircularProgressIndicator(),
                                     errorWidget: (context, url, error) => const Icon(Icons.error),
                                     height: 100,

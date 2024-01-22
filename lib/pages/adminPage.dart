@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
+import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,16 @@ import 'package:path_provider/path_provider.dart';
 // import 'package:dio/dio.dart';
 import 'package:open_file/open_file.dart';
 
+
+Image? decodeBase64ToImage(String base64String) {
+  try {
+    Uint8List bytes = base64.decode(base64String);
+    return Image.memory(bytes);
+  } catch (e) {
+    print('Erreur lors du décodage de l\'image : $e');
+    return null;
+  }
+}
 
 class Partenaire {
   final String id;

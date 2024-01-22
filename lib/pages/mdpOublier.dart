@@ -6,16 +6,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:ocean/authentification/confirmation.dart';
-import 'package:ocean/authentification/connexion.dart';
-import 'package:ocean/authentification/enregistrement.dart';
-import 'package:ocean/authentification/user_data.dart';
-import 'package:ocean/pages/bottomNavBar.dart';
-import 'package:ocean/pages/compteClient.dart';
+// import 'package:ocean/authentification/confirmation.dart';
+// import 'package:ocean/authentification/connexion.dart';
+// import 'package:ocean/authentification/enregistrement.dart';
+// import 'package:ocean/authentification/user_data.dart';
+// import 'package:ocean/pages/bottomNavBar.dart';
+// import 'package:ocean/pages/compteClient.dart';
 import 'package:ocean/pages/newPassword.dart';
-import 'package:ocean/pages/preInscription.dart';
+// import 'package:ocean/pages/preInscription.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
 
 bool connecte = false;
@@ -32,7 +32,7 @@ class _MdpOublierState extends State<MdpOublier> {
   String numeroError = '';
 
   bool isLoading = false;
-  bool _obscureText = true;
+  // bool _obscureText = true;
   TextEditingController emailController = TextEditingController();
   
 

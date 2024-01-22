@@ -4,12 +4,12 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+// import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:ocean/authentification/connexion.dart';
 import 'package:ocean/authentification/user_data.dart';
 import 'package:ocean/modeles/modelePrestataire.dart';
-import 'package:ocean/pages/carte_page_map.dart';
+// import 'package:ocean/pages/carte_page_map.dart';
 
 
 
@@ -231,7 +231,8 @@ class _SeachePageState extends State<SeachePage> {
                                     // color: color, 
                                   ),
                                   child: CachedNetworkImage(
-                                    imageUrl: prestataire.photoProfil ?? '',
+                                    imageUrl: prestataire.photoProfil,
+                                    // imageUrl: prestataire.photoProfil ?? '',
                                     placeholder: (context, url) => const CircularProgressIndicator(),
                                     errorWidget: (context, url, error) => const Icon(Icons.error),
                                     height: 100,

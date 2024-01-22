@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_interpolation_to_compose_strings, unnecessary_string_interpolations, avoid_print, prefer_const_constructors, use_build_context_synchronously
 
-import 'dart:ffi';
+// import 'dart:ffi';
 import 'dart:math';
 import 'dart:convert';
 import 'dart:io';
@@ -405,7 +405,7 @@ void _onItemTapped(int index) async {
                   });
                   // await Future.delayed(Duration(seconds: 5)); // Attendre 2 secondes
                   print("gettttttttttttttttttttttttt");
-                  await fetchData(); // Attendre la fin de la requête GET
+                  // await fetchData(); // Attendre la fin de la requête GET
                   Navigator.of(context).pop();
                   setState(() {});
                 },
@@ -777,10 +777,11 @@ void _onItemTapped(int index) async {
                 // SizedBox(width: MediaQuery.sizeOf(context).width * 0.05,),
                 // SizedBox(width: 10,),
                 // Utilisation du nouveau widget pour afficher la moyenne
-                Padding(
-                  padding: const EdgeInsets.only(left: 80.0),
-                  child: _buildAverageWidget(),
-                ),
+                // A revoir pour décommenter
+                // Padding(
+                //   padding: const EdgeInsets.only(left: 80.0),
+                //   child: _buildAverageWidget(),
+                // ),
               ],
             ),
             const SizedBox(height: 5,),

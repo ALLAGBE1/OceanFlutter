@@ -1,12 +1,12 @@
 // ignore_for_file: avoid_print, use_build_context_synchronously, depend_on_referenced_packages
 
-import 'dart:convert';
+// import 'dart:convert';
 
 import 'package:flutter/cupertino.dart'; 
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:ocean/pages/qrcodeView.dart';
+// import 'package:ocean/pages/qrcodeView.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';

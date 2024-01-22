@@ -18,6 +18,13 @@ class LeClient extends StatefulWidget {
   State<LeClient> createState() => _LeClientState();
 }
 class _LeClientState extends State<LeClient> {
+  String usernameError = '';
+  String passwordError = '';
+  String nomprenomError = '';
+  String emailError = '';
+  String numeroError = '';
+
+
   bool isLoading = false;
   bool _obscureText = true; // définir l'état initial comme étant masqué
 
@@ -28,6 +35,15 @@ class _LeClientState extends State<LeClient> {
   TextEditingController numeroController = TextEditingController();
 
   Future<void> enregistrerUtilisateur() async {
+    // Réinitialise les messages d'erreur
+    setState(() {
+      nomprenomError = '';
+      emailError = '';
+      numeroError = '';
+      usernameError = '';
+      passwordError = '';
+    });
+    
     String nomprenom = nomprenomController.text;
     String email = emailController.text;
     String password = passwordController.text;
@@ -35,6 +51,46 @@ class _LeClientState extends State<LeClient> {
     String numero = numeroController.text;
     // String numero = usernameController.text;
     // int numeroEntier = int.parse(numero);
+
+        // Vérifie si le champ username est vide
+    if (nomprenom.isEmpty) {
+      setState(() {
+        nomprenomError = 'Veuillez renseigner votre nom et prénom';
+      });
+      return;
+    }
+
+    // Vérifie si le champ password est vide
+    if (username.isEmpty) {
+      setState(() {
+        usernameError = 'Veuillez renseigner votre nom d\'utilisateur';
+      });
+      return;
+    }
+
+    // Vérifie si le champ password est vide
+    if (email.isEmpty) {
+      setState(() {
+        emailError = 'Veuillez renseigner votre email';
+      });
+      return;
+    }
+
+    // Vérifie si le champ password est vide
+    if (numero.isEmpty) {
+      setState(() {
+        numeroError = 'Veuillez renseigner votre numéro';
+      });
+      return;
+    }
+
+    // Vérifie si le champ password est vide
+    if (password.isEmpty) {
+      setState(() {
+        passwordError = 'Veuillez renseigner votre mot de passe';
+      });
+      return;
+    }
 
     setState(() {
       isLoading = true;
@@ -160,7 +216,7 @@ class _LeClientState extends State<LeClient> {
             dragStartBehavior: DragStartBehavior.down,
             child: Container(
               width: MediaQuery.sizeOf(context).width,
-              height: MediaQuery.sizeOf(context).height,
+              // height: MediaQuery.sizeOf(context).height,
               decoration: BoxDecoration(
                   color: Colors.grey,
                   border: Border.all(color: Colors.grey, width: 1.5),
@@ -347,18 +403,58 @@ class _LeClientState extends State<LeClient> {
     );
   }
 
+  // Widget _vnomprenom() {
+  //   return Container(
+  //     // height: 58,
+  //     margin: const EdgeInsets.all(10),
+  //     child: Column(
+  //       children: [
+  //         CupertinoTextField(
+  //           controller: nomprenomController,
+  //           placeholder: "Nom et prénom",
+  //           decoration: BoxDecoration(
+  //             border: Border.all(color: Colors.greenAccent),
+  //             borderRadius: BorderRadius.circular(5),
+  //             color: Colors.white,
+  //           ),
+  //         ),
+  //         Text(
+  //           nomprenomError,
+  //           style: const TextStyle(color: Colors.red),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
   Widget _vnomprenom() {
     return Container(
-      height: 58,
+      // height: 58,
       margin: const EdgeInsets.all(10),
-      child: CupertinoTextField(
-        controller: nomprenomController,
-        placeholder: "Nom et prénom",
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.greenAccent),
-          borderRadius: BorderRadius.circular(5),
-          color: Colors.white,
-        ),
+      child: Column(
+        children: [
+          CupertinoTextField(
+            controller: nomprenomController,
+            placeholder: "Nom et prénom",
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.greenAccent),
+              borderRadius: BorderRadius.circular(5),
+              color: Colors.white,
+            ),
+            suffix: CupertinoButton(
+              child: const Text(" "),
+              onPressed: () {
+                // setState(() {
+                //   _obscureText = !_obscureText;
+                // });
+              },
+            ),
+          ),
+          Text(
+            nomprenomError,
+            style: const TextStyle(color: Colors.red),
+          ),
+        ],
       ),
     );
   }
@@ -380,18 +476,58 @@ class _LeClientState extends State<LeClient> {
     );
   }
 
+  // Widget _vusername() {
+  //   return Container(
+  //     // height: 58,
+  //     margin: const EdgeInsets.all(10),
+  //     child: Column(
+  //       children: [
+  //         CupertinoTextField(
+  //           controller: usernameController,
+  //           placeholder: "Username",
+  //           decoration: BoxDecoration(
+  //             border: Border.all(color: Colors.greenAccent),
+  //             borderRadius: BorderRadius.circular(5),
+  //             color: Colors.white,
+  //           ),
+  //         ),
+  //         Text(
+  //           usernameError,
+  //           style: const TextStyle(color: Colors.red),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
   Widget _vusername() {
     return Container(
-      height: 58,
+      // height: 58,
       margin: const EdgeInsets.all(10),
-      child: CupertinoTextField(
-        controller: usernameController,
-        placeholder: "Username",
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.greenAccent),
-          borderRadius: BorderRadius.circular(5),
-          color: Colors.white,
-        ),
+      child: Column(
+        children: [
+          CupertinoTextField(
+            controller: usernameController,
+            placeholder: "Username",
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.greenAccent),
+              borderRadius: BorderRadius.circular(5),
+              color: Colors.white,
+            ),
+            suffix: CupertinoButton(
+              child: const Text(" "),
+              onPressed: () {
+                // setState(() {
+                //   _obscureText = !_obscureText;
+                // });
+              },
+            ),
+          ),
+          Text(
+            usernameError,
+            style: const TextStyle(color: Colors.red),
+          ),
+        ],
       ),
     );
   }
@@ -401,7 +537,7 @@ class _LeClientState extends State<LeClient> {
       alignment: Alignment.bottomLeft,
       padding: const EdgeInsets.only(left: 10.0),
       child: Text(
-        "Numéro de téléphone ou Email",
+        "Email",
         style: GoogleFonts.acme(
           color: Colors.white,
           fontSize: 18,
@@ -411,18 +547,58 @@ class _LeClientState extends State<LeClient> {
     );
   }
 
+  // Widget _vemail() {
+  //   return Container(
+  //     // height: 58,
+  //     margin: const EdgeInsets.all(10),
+  //     child: Column(
+  //       children: [
+  //         CupertinoTextField(
+  //           controller: emailController,
+  //           placeholder: "Numéro de téléphone ou Email",
+  //           decoration: BoxDecoration(
+  //             border: Border.all(color: Colors.greenAccent),
+  //             borderRadius: BorderRadius.circular(5),
+  //             color: Colors.white,
+  //           ),
+  //         ),
+  //         Text(
+  //           emailError,
+  //           style: const TextStyle(color: Colors.red),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
   Widget _vemail() {
     return Container(
-      height: 58,
+      // height: 58,
       margin: const EdgeInsets.all(10),
-      child: CupertinoTextField(
-        controller: emailController,
-        placeholder: "Numéro de téléphone ou Email",
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.greenAccent),
-          borderRadius: BorderRadius.circular(5),
-          color: Colors.white,
-        ),
+      child: Column(
+        children: [
+          CupertinoTextField(
+            controller: emailController,
+            placeholder: "Email",
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.greenAccent),
+              borderRadius: BorderRadius.circular(5),
+              color: Colors.white,
+            ),
+            suffix: CupertinoButton(
+              child: const Text(" "),
+              onPressed: () {
+                // setState(() {
+                //   _obscureText = !_obscureText;
+                // });
+              },
+            ),
+          ),
+          Text(
+            emailError,
+            style: const TextStyle(color: Colors.red),
+          ),
+        ],
       ),
     );
   }
@@ -442,18 +618,58 @@ class _LeClientState extends State<LeClient> {
     );
   }
 
+  // Widget _vnumero() {
+  //   return Container(
+  //     // height: 58,
+  //     margin: const EdgeInsets.all(10),
+  //     child: Column(
+  //       children: [
+  //         CupertinoTextField(
+  //           controller: numeroController,
+  //           placeholder: "Numéro de téléphone",
+  //           decoration: BoxDecoration(
+  //             border: Border.all(color: Colors.greenAccent),
+  //             borderRadius: BorderRadius.circular(5),
+  //             color: Colors.white,
+  //           ),
+  //         ),
+  //         Text(
+  //           numeroError,
+  //           style: const TextStyle(color: Colors.red),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
   Widget _vnumero() {
     return Container(
-      height: 58,
+      // height: 58,
       margin: const EdgeInsets.all(10),
-      child: CupertinoTextField(
-        controller: numeroController,
-        placeholder: "Numéro de téléphone",
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.greenAccent),
-          borderRadius: BorderRadius.circular(5),
-          color: Colors.white,
-        ),
+      child: Column(
+        children: [
+          CupertinoTextField(
+            controller: numeroController,
+            placeholder: "Numéro de téléphone",
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.greenAccent),
+              borderRadius: BorderRadius.circular(5),
+              color: Colors.white,
+            ),
+            suffix: CupertinoButton(
+              child: const Text(" "),
+              onPressed: () {
+                // setState(() {
+                //   _obscureText = !_obscureText;
+                // });
+              },
+            ),
+          ),
+          Text(
+            numeroError,
+            style: const TextStyle(color: Colors.red),
+          ),
+        ],
       ),
     );
   }
@@ -473,34 +689,78 @@ class _LeClientState extends State<LeClient> {
     );
   }
 
- Widget _vmotdepasse() {
+//  Widget _vmotdepasse() {
+//     return Container(
+//       // height: 58,
+//       margin: const EdgeInsets.all(10),
+//       child: Column(
+//         children: [
+//           CupertinoTextField(
+//             // Radius cursorRadius = const Radius.circular(2.0),
+//             // bool cursorOpacityAnimates = true,
+//             // Color? cursorColor,
+//             controller: passwordController,
+//             obscureText: _obscureText,
+//             placeholder: "Créer un mot de passe",
+//             decoration: BoxDecoration(
+//               border: Border.all(color: Colors.greenAccent),
+//               borderRadius: BorderRadius.circular(5),
+//               color: Colors.white,
+//             ),
+//             suffix: CupertinoButton(
+//               padding: EdgeInsets.zero,
+//               child: Icon(
+//                 _obscureText ? Icons.visibility : Icons.visibility_off,
+//                 color: Colors.grey,
+//               ),
+//               onPressed: () {
+//                 setState(() {
+//                   _obscureText = !_obscureText;
+//                 });
+//               },
+//             ),
+//           ),
+//           Text(
+//             passwordError,
+//             style: const TextStyle(color: Colors.red),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+Widget _vmotdepasse() {
     return Container(
-      height: 58,
       margin: const EdgeInsets.all(10),
-      child: CupertinoTextField(
-        // Radius cursorRadius = const Radius.circular(2.0),
-        // bool cursorOpacityAnimates = true,
-        // Color? cursorColor,
-        controller: passwordController,
-        obscureText: _obscureText,
-        placeholder: "Créer un mot de passe",
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.greenAccent),
-          borderRadius: BorderRadius.circular(5),
-          color: Colors.white,
-        ),
-        suffix: CupertinoButton(
-          padding: EdgeInsets.zero,
-          child: Icon(
-            _obscureText ? Icons.visibility : Icons.visibility_off,
-            color: Colors.grey,
+      child: Column(
+        children: [
+          CupertinoTextField(
+            controller: passwordController,
+            obscureText: _obscureText,
+            placeholder: "Créer un mot de passe",
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.greenAccent),
+              borderRadius: BorderRadius.circular(5),
+              color: Colors.white,
+            ),
+            suffix: CupertinoButton(
+              // padding: EdgeInsets.zero,
+              child: Icon(
+                _obscureText ? Icons.visibility : Icons.visibility_off,
+                color: Colors.grey,
+              ),
+              onPressed: () {
+                setState(() {
+                  _obscureText = !_obscureText;
+                });
+              },
+            ),
           ),
-          onPressed: () {
-            setState(() {
-              _obscureText = !_obscureText;
-            });
-          },
-        ),
+          Text(
+            passwordError,
+            style: const TextStyle(color: Colors.red),
+          ),
+        ],
       ),
     );
   }

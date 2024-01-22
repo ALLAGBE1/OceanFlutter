@@ -1,0 +1,171 @@
+*Tob tob (administrateur)
+* Sale sale
+
+
+_________________
+
+import 'package:flutter/material.dart';
+import 'package:tosho/l10n/l10n.dart';
+import 'package:tosho/shared/helpers/extensions.dart';
+
+class ToshoTabbar extends StatelessWidget {
+  const ToshoTabbar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      initialIndex: 1,
+      length: 3,
+      child: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(60.0),
+          child: Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: context.colors.antiFlashWhite,
+              borderRadius: BorderRadius.circular(100.0),
+              border: Border.all(
+                color: context.colors.cadetGray!,
+                width: 4.0,
+              ),
+            ),
+            child: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              bottom: TabBar(
+                indicator: ShapeDecoration(
+                  color: context.colors.systemRed,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                ),
+                indicatorSize: TabBarIndicatorSize.label,
+                tabs: <Widget>[
+                  Tab(
+                    child: Text(
+                      context.l10n.serie.toLowerCase(),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: context.colors.cadetGray,
+                      ),
+                    ),
+                  ),
+                  Tab(
+                    child: Text(
+                      context.l10n.maCollec.toLowerCase(),
+                      style: TextStyle(fontSize: 12, color: context.colors.cadetGray),
+                    ),
+                  ),
+                  Tab(
+                    child: Text(
+                      context.l10n.utilisateur.toLowerCase(),
+                      style: TextStyle(fontSize: 12, color: context.colors.cadetGray),
+                    ),
+                  ),
+                ],
+                labelPadding: const EdgeInsets.symmetric(horizontal: 21, vertical: 4),
+              ),
+            ),
+          ),
+        ),
+        body: _tabbar(context),
+      ),
+    );
+  }
+
+  Widget _tabbar(BuildContext context) {
+    return const TabBarView(
+      children: <Widget>[
+        Center(
+          child: Text('context.l10n.serie'),
+        ),
+        Center(
+          child: Text('context.l10n.maCollec'),
+        ),
+        Center(
+          child: Text('context.l10n.utilisateur'),
+        ),
+      ],
+    );
+  }
+}
+
+
+
+---------------
+https://pub.dev/packages/flutter_launcher_icons
+
+Ferdinand Harmel12:56
+https://pub.dev/packages/flutter_launcher_icons
+https://pub.dev/packages/flutter_native_splash
+Ferdinand Harmel13:00
+showModalBottomSheet
+
+
+èèèèèèèèèèèèèèèè
+
+import 'package:flutter/material.dart';
+
+class ToshoNoteSelector extends StatefulWidget {
+  const ToshoNoteSelector({
+    super.key,
+  });
+
+  @override
+  _ToshoNoteSelectorState createState() => _ToshoNoteSelectorState();
+}
+
+class _ToshoNoteSelectorState extends State<ToshoNoteSelector> {
+  late double _selectedRating = 1.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: List.generate(
+            19,
+            (index) => _ratingButton(
+              context,
+              (index + 2) / 2,
+              _selectedRating == (index + 2) / 2,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _ratingButton(BuildContext context, double rating, bool isSelected) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: InkWell(
+        onTap: () {
+          // if (!_selectedRating.isNaN && _selectedRating == rating) {
+
+          //   return;
+          // }
+
+          setState(() {
+            _selectedRating = rating;
+          });
+        },
+        child: Container(
+          padding: const EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.blue : null,
+            borderRadius: BorderRadius.circular(5.0),
+          ),
+          child: Text(
+            rating.roundToDouble().toString(),
+            style: TextStyle(
+              fontSize: 18.0,
+              color: isSelected ? Colors.white : Colors.black,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

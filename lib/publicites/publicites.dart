@@ -1,8 +1,23 @@
 import 'dart:convert';
+// import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
-import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:ocean/pages/publicite.dart';
 
+
+// Image? decodeBase64ToImage(String base64String) {
+//   try {
+//     Uint8List bytes = base64.decode(base64String);
+//     return Image.memory(bytes);
+//   } catch (e) {
+//     print('Erreur lors du décodage de l\'image : $e');
+//     return null;
+//   }
+// }
+
+bool isLoading = true;
 
 class Publicites {
   final String id;
@@ -185,17 +200,26 @@ class _MesPublicitesState extends State<MesPublicites> {
                     return confirm == true;
                 }
               },
-              child: CachedNetworkImage(
-                imageUrl: "${publicites[index].imagepublier}",
-                placeholder: (context, imageUrl) =>
-                    const CircularProgressIndicator(),
-                errorWidget: (context, imageUrl, error) =>
-                    const Icon(Icons.error),
+              child: Image.memory(
+                base64.decode(publicites[index].imagepublier!),
                 fit: BoxFit.cover,
               ),
+              // child: isLoading ? _spinner() : Image.memory(
+              //   base64.decode(publicites[index].imagepublier!),
+              //   fit: BoxFit.cover,
+              // ),
             );
           },
         )
     );
   }
+
+  Widget _spinner() {
+    return const SpinKitFadingCircle(
+      color: Colors.blueAccent,
+      duration: Duration(milliseconds: 1200),
+      size: 100.0,
+    );
+  }
+  
 }
