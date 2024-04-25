@@ -1,0 +1,20 @@
+{
+    "workbench.colorCustomizations": {
+        "titleBar.activeBackground": "#0ebed8",
+        "titleBar.activeForeground": "#093a65",
+        "titleBar.inactiveBackground": "#0ebed8",
+        "titleBar.inactiveForeground": "#093a65",
+    },
+    "dart.lineLength": 120,
+    "editor.rulers": [120],
+    "[dart]": {
+      "editor.defaultFormatter": "Dart-Code.dart-code",
+      "editor.codeActionsOnSave": {
+        "source.fixAll": "explicit",
+        "source.organizeImports": "explicit"
+      },
+      "editor.formatOnSave": true
+    },
+    "cSpell.enabled": false
+    
+}

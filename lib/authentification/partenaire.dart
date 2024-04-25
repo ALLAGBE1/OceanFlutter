@@ -313,7 +313,6 @@ class _PartenaireState extends State<Partenaire> {
 
 
   Future<List<String>> fetchDomainesActivite() async {
-    // final response = await http.get(Uri.parse('http://10.50.12.85:3000/domaineActivite/'));
     final response = await http.get(Uri.parse('https://ocean-52xt.onrender.com/domaineActivite/'));
 
     if (response.statusCode == 200) {

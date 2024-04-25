@@ -482,10 +482,10 @@ void _showLocationDialog() {
 //                 TextButton(
 //                   child: const Text('OK'),
 //                   onPressed: () {
-//                     Navigator.push(
-//                     context,
-//                     MaterialPageRoute(
-//                         builder: (context) => const Connexion())
+                    // Navigator.push(
+                    // context,
+                    // MaterialPageRoute(
+                    //     builder: (context) => const Connexion())
 //                     // MaterialPageRoute(
 //                     //     builder: (context) => const ConfirmationScreen())
 //                   );

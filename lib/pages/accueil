@@ -19,7 +19,7 @@ import 'package:ocean/pages/resultatRecherche.dart';
 import 'package:ocean/pages/searchePage.dart';
 
 
-class Metier {
+class Metier {+9999
   final String id;
   final String domaineactivite;
 

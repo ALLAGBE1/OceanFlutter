@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ocean/authentification/client.dart';
 import 'package:ocean/authentification/confirmation.dart';
 import 'package:ocean/authentification/connexion.dart';
@@ -14,7 +15,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterDownloader.initialize(debug: true); // debug: true est optionnel
   FlutterDownloader.registerCallback(downloadCallback as DownloadCallback);
-  runApp(const MyApp(documentFourni: '',));
+  runApp(const ProviderScope(
+      child: MyApp(
+    documentFourni: '',
+  )));
 }
 
 int previousProgress = 0;
@@ -25,9 +29,6 @@ void downloadCallback(String id, int status, int progress) {
     previousProgress = progress;
   }
 }
-
-
-
 
 class MyApp extends StatelessWidget {
   // const MyApp({super.key});
@@ -41,24 +42,23 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Ocean',
       theme: ThemeData(
-        
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
       initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),
-        '/home': (context) => BottomNavBar(documentFourni: documentFourni,),
+        '/home': (context) => BottomNavBar(
+              documentFourni: documentFourni,
+            ),
         '/confirmation': (context) => const ConfirmationScreen(),
         '/connexion': (context) => const Connexion(),
         '/enregistrement': (context) => const Enregistrement(),
         '/preinscription': (context) => const PreInscription(),
         '/client': (context) => const LeClient(),
         // ... autres routes
-        
       },
       debugShowCheckedModeBanner: false,
-      
     );
   }
 }

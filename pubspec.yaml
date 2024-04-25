@@ -57,6 +57,8 @@ dependencies:
   share_plus: ^7.1.0
   flutter_rating_bar: ^4.0.1
   url_launcher: ^6.2.1
+  flutter_riverpod: ^2.4.10
+  connectivity_plus: ^5.0.2
 
 dev_dependencies:
   flutter_test:
